@@ -67,8 +67,38 @@ block
         | procedureAndFunctionDeclarationPart
         | usesUnitsPart
         | IMPLEMENTATION
+        | classDeclarationPart
     )* compoundStatement
     ;
+classBlock
+     : (
+       memberVariableDeclarationPart
+        | methodDeclaration
+        | IMPLEMENTATION
+        | classDeclarationPart
+     )* compoundStatement
+     ;
+
+
+classDeclarationPart
+    : modifier CLASS identifier clModDecl classBlock
+    ;
+
+
+classModifier
+      : EXTENDS
+      | IMPLEMENTS
+      ;
+
+clModDecl
+       : classModifier identifier
+       ;
+
+modifier
+     : PRIVATE
+        | PUBLIC
+        | STATIC
+        ;
 
 usesUnitsPart
     : USES identifierList SEMI
@@ -256,9 +286,14 @@ variableDeclarationPart
     : VAR variableDeclaration (SEMI variableDeclaration)* SEMI
     ;
 
+memberVariableDeclarationPart
+    : MEMBER modifier variableDeclaration (SEMI variableDeclaration)* SEMI
+    ;
+
 variableDeclaration
     : identifierList COLON type_
     ;
+
 
 procedureAndFunctionDeclarationPart
     : procedureOrFunctionDeclaration SEMI
@@ -272,6 +307,8 @@ procedureOrFunctionDeclaration
 procedureDeclaration
     : PROCEDURE identifier (formalParameterList)? SEMI block
     ;
+
+
 
 formalParameterList
     : LPAREN formalParameterSection (SEMI formalParameterSection)* RPAREN
@@ -299,6 +336,10 @@ constList
 functionDeclaration
     : FUNCTION identifier (formalParameterList)? COLON resultType SEMI block
     ;
+
+methodDeclaration
+     : METHOD  modifier identifier (formalParameterList)? SEMI block
+     ;
 
 resultType
     : typeIdentifier
@@ -799,6 +840,35 @@ TRUE
 FALSE
     : 'FALSE'
     ;
+
+PUBLIC
+    : 'PUBLIC'
+    ;
+
+PRIVATE
+    : 'PRIVATE'
+    ;
+
+STATIC
+    : 'STATIC'
+    ;
+
+METHOD
+    : 'METHOD'
+    ;
+
+MEMBER
+     : 'MEMBER'
+     ;
+
+IMPLEMENTS
+     : 'IMPLEMENTS'
+     ;
+
+ EXTENDS
+     : 'EXTENDS'
+     ;
+
 
 WS
     : [ \t\r\n] -> skip
