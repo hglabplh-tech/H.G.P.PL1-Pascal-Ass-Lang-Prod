@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: de.active-group/active-clojure:0.42.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/active-group/active-clojure/0.42.2/active-clojure-0.42.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
