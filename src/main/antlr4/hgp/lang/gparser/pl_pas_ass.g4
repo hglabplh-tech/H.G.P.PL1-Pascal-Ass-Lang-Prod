@@ -185,6 +185,10 @@ functionType
     : FUNCTION (formalParameterList)? COLON resultType
     ;
 
+lambdaTopLevelType
+     : DEFINE (formalParameterList)? COLON resultType
+     ;
+
 procedureType
     : PROCEDURE (formalParameterList)?
     ;
@@ -225,6 +229,7 @@ unpackedStructuredType
     | recordType
     | setType
     | fileType
+    | lambdaType
     ;
 
 stringtype
@@ -291,6 +296,10 @@ fileType
     | FILE
     ;
 
+lambdaType
+       : LAMBDA
+       ;
+
 pointerType
     : POINTER typeIdentifier
     ;
@@ -314,6 +323,7 @@ procedureAndFunctionDeclarationPart
 
 procedureOrFunctionDeclaration
     : procedureDeclaration
+    | lambdaDeclaration
     | functionDeclaration
     ;
 
@@ -332,6 +342,7 @@ formalParameterSection
     | VAR parameterGroup
     | FUNCTION parameterGroup
     | PROCEDURE parameterGroup
+    | LAMBDA parameterGroup
     ;
 
 parameterGroup
@@ -349,6 +360,11 @@ constList
 functionDeclaration
     : FUNCTION identifier (formalParameterList)? COLON resultType SEMI block
     ;
+
+lambdaDeclaration
+    : ANONYMOUS  (formalParameterList)? COLON resultType SEMI block
+    ;
+
 
 methodDeclaration
      : METHOD  modifier identifier (formalParameterList)? SEMI block

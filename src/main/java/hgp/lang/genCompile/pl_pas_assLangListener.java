@@ -20,7 +20,6 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterProgram(pl_pas_assParser.ProgramContext ctx) {
-
     }
 
     @Override
@@ -240,7 +239,6 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterClassModifier(pl_pas_assParser.ClassModifierContext ctx) {
-
     }
 
     @Override
@@ -449,6 +447,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
     }
 
     @Override
+    public void enterLambdaDeclaration(pl_pas_assParser.LambdaDeclarationContext ctx) {
+
+    }
+
+    @Override
+    public void exitLambdaDeclaration(pl_pas_assParser.LambdaDeclarationContext ctx) {
+
+    }
+
+    @Override
     public void enterSubrangeType(pl_pas_assParser.SubrangeTypeContext ctx) {
 
     }
@@ -530,7 +538,6 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterModifier(pl_pas_assParser.ModifierContext ctx) {
-
     }
 
     @Override
@@ -735,6 +742,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitFormalParameterList(pl_pas_assParser.FormalParameterListContext ctx) {
+
+    }
+
+    @Override
+    public void enterLambdaType(pl_pas_assParser.LambdaTypeContext ctx) {
+
+    }
+
+    @Override
+    public void exitLambdaType(pl_pas_assParser.LambdaTypeContext ctx) {
 
     }
 
@@ -975,6 +992,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitRecordType(pl_pas_assParser.RecordTypeContext ctx) {
+
+    }
+
+    @Override
+    public void enterLambdaTopLevelType(pl_pas_assParser.LambdaTopLevelTypeContext ctx) {
+
+    }
+
+    @Override
+    public void exitLambdaTopLevelType(pl_pas_assParser.LambdaTopLevelTypeContext ctx) {
 
     }
 
