@@ -239,6 +239,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
     }
 
     @Override
+    public void enterClassModifier(pl_pas_assParser.ClassModifierContext ctx) {
+
+    }
+
+    @Override
+    public void exitClassModifier(pl_pas_assParser.ClassModifierContext ctx) {
+
+    }
+
+    @Override
     public void enterAssignmentStatement(pl_pas_assParser.AssignmentStatementContext ctx) {
 
     }
@@ -345,6 +355,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitFunctionType(pl_pas_assParser.FunctionTypeContext ctx) {
+
+    }
+
+    @Override
+    public void enterMemberVariableDeclarationPart(pl_pas_assParser.MemberVariableDeclarationPartContext ctx) {
+
+    }
+
+    @Override
+    public void exitMemberVariableDeclarationPart(pl_pas_assParser.MemberVariableDeclarationPartContext ctx) {
 
     }
 
@@ -499,6 +519,26 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
     }
 
     @Override
+    public void enterTheblocks(pl_pas_assParser.TheblocksContext ctx) {
+
+    }
+
+    @Override
+    public void exitTheblocks(pl_pas_assParser.TheblocksContext ctx) {
+
+    }
+
+    @Override
+    public void enterModifier(pl_pas_assParser.ModifierContext ctx) {
+
+    }
+
+    @Override
+    public void exitModifier(pl_pas_assParser.ModifierContext ctx) {
+
+    }
+
+    @Override
     public void enterCompoundStatement(pl_pas_assParser.CompoundStatementContext ctx) {
 
     }
@@ -649,6 +689,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
     }
 
     @Override
+    public void enterClassDeclarationPart(pl_pas_assParser.ClassDeclarationPartContext ctx) {
+
+    }
+
+    @Override
+    public void exitClassDeclarationPart(pl_pas_assParser.ClassDeclarationPartContext ctx) {
+
+    }
+
+    @Override
     public void enterRepeatStatement(pl_pas_assParser.RepeatStatementContext ctx) {
 
     }
@@ -739,12 +789,32 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
     }
 
     @Override
+    public void enterProgClassBlock(pl_pas_assParser.ProgClassBlockContext ctx) {
+
+    }
+
+    @Override
+    public void exitProgClassBlock(pl_pas_assParser.ProgClassBlockContext ctx) {
+
+    }
+
+    @Override
     public void enterProcedureType(pl_pas_assParser.ProcedureTypeContext ctx) {
 
     }
 
     @Override
     public void exitProcedureType(pl_pas_assParser.ProcedureTypeContext ctx) {
+
+    }
+
+    @Override
+    public void enterMethodDeclaration(pl_pas_assParser.MethodDeclarationContext ctx) {
+
+    }
+
+    @Override
+    public void exitMethodDeclaration(pl_pas_assParser.MethodDeclarationContext ctx) {
 
     }
 
@@ -865,6 +935,26 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitFieldList(pl_pas_assParser.FieldListContext ctx) {
+
+    }
+
+    @Override
+    public void enterClModDecl(pl_pas_assParser.ClModDeclContext ctx) {
+
+    }
+
+    @Override
+    public void exitClModDecl(pl_pas_assParser.ClModDeclContext ctx) {
+
+    }
+
+    @Override
+    public void enterClassBlock(pl_pas_assParser.ClassBlockContext ctx) {
+
+    }
+
+    @Override
+    public void exitClassBlock(pl_pas_assParser.ClassBlockContext ctx) {
 
     }
 

@@ -46,8 +46,15 @@ options {
 
 
 program
-    : programHeading (INTERFACE)? block DOT EOF
+    : programHeading (INTERFACE)? theblocks DOT EOF
     ;
+
+theblocks
+: (block
+| progClassBlock
+)* compoundStatement
+;
+
 
 programHeading
     : PROGRAM identifier (LPAREN identifierList RPAREN)? SEMI
@@ -66,16 +73,22 @@ block
         | variableDeclarationPart
         | procedureAndFunctionDeclarationPart
         | usesUnitsPart
+
         | IMPLEMENTATION
-        | classDeclarationPart
+
     )* compoundStatement
     ;
+
+progClassBlock
+    : classDeclarationPart
+    ;
+
 classBlock
      : (
        memberVariableDeclarationPart
         | methodDeclaration
-        | IMPLEMENTATION
         | classDeclarationPart
+        | IMPLEMENTATION
      )* compoundStatement
      ;
 
