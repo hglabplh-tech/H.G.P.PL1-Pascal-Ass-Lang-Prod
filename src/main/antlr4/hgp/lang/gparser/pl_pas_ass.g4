@@ -362,7 +362,7 @@ functionDeclaration
     ;
 
 lambdaDeclaration
-    : ANONYMOUS  (formalParameterList)? COLON resultType SEMI block
+    : '('ANONYMOUS  (formalParameterList)?')' '->' resultType SEMI block
     ;
 
 
