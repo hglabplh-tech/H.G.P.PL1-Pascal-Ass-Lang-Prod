@@ -898,6 +898,18 @@ IMPLEMENTS
      : 'EXTENDS'
      ;
 
+DEFINE
+    : 'DEFINE'
+    ;
+
+LAMBDA
+    : 'LAMBDA'
+    ;
+
+ANONYMOUS
+    : 'ANONYMOUS'
+    ;
+
 
 WS
     : [ \t\r\n] -> skip
