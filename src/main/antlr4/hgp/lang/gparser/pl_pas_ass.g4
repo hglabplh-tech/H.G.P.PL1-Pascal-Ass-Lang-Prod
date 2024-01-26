@@ -37,10 +37,13 @@ Adapted from pascal.g by  Hakki Dogusan, Piet Schoutteten and Marton Papp
 // $antlr-format alignTrailingComments true, columnLimit 150, minEmptyLines 1, maxEmptyLinesToKeep 1, reflowComments false, useTab false
 // $antlr-format allowShortRulesOnASingleLine false, allowShortBlocksOnASingleLine true, alignSemicolons hanging, alignColons hanging
 
+
 grammar pl_pas_ass;
 
+
+
 options {
-    caseInsensitive = true;
+
     language=Java;
 }
 
@@ -385,8 +388,11 @@ functionDeclaration
     : FUNCTION identifier (formalParameterList)? COLON resultType SEMI block
     ;
 
+assblock
+    :LBRACK ASS_STRING RBRACK;
+
 assFunDeclaration
-    : ASSFUN identifier (formalParameterList)? COLON resultType SEMI block
+    : ASSFUN identifier (formalParameterList)? COLON resultType SEMI assblock
     ;
 
 lambdaDeclaration
@@ -973,6 +979,9 @@ IDENT
 
 STRING_LITERAL
     : '\'' ('\'\'' | ~ ('\''))* '\''
+    ;
+ASS_STRING
+    : .*?
     ;
 
 NUM_INT
