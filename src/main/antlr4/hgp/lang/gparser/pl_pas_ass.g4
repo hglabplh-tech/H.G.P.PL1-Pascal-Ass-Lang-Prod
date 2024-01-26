@@ -401,11 +401,13 @@ variable
         | LBRACK2 expression (COMMA expression)* RBRACK2
         | DOT identifier
         | POINTER
+        | LAMBDA
     )*
     ;
 
 expression
-    : simpleExpression (relationaloperator expression)?
+    : lambdaDeclaration
+        simpleExpression (relationaloperator expression)?
     ;
 
 relationaloperator
