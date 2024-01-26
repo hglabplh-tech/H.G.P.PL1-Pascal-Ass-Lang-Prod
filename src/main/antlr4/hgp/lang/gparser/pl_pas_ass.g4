@@ -80,7 +80,7 @@ block
     ;
 
 progClassBlock
-    : classDeclarationPart
+    : (classDeclarationPart)* compoundStatement
     ;
 
 classBlock
