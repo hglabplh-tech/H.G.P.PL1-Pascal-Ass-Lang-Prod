@@ -362,7 +362,7 @@ functionDeclaration
     ;
 
 lambdaDeclaration
-    : '('ANONYMOUS  (formalParameterList)?')' '->' resultType SEMI block
+    : '('ANONYMOUS  (formalParameterList)?')' RESULTPTR resultType SEMI block
     ;
 
 
@@ -762,6 +762,9 @@ ASSIGN
 
 COMMA
     : ','
+    ;
+RESULTPTR
+    : '->'
     ;
 
 SEMI
