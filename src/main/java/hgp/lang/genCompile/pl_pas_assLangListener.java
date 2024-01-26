@@ -201,6 +201,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
     }
 
     @Override
+    public void enterInterfaceDeclarationPart(pl_pas_assParser.InterfaceDeclarationPartContext ctx) {
+
+    }
+
+    @Override
+    public void exitInterfaceDeclarationPart(pl_pas_assParser.InterfaceDeclarationPartContext ctx) {
+
+    }
+
+    @Override
     public void enterConstantDefinitionPart(pl_pas_assParser.ConstantDefinitionPartContext ctx) {
 
     }
@@ -306,6 +316,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitProgramHeading(pl_pas_assParser.ProgramHeadingContext ctx) {
+
+    }
+
+    @Override
+    public void enterMethodType(pl_pas_assParser.MethodTypeContext ctx) {
+
+    }
+
+    @Override
+    public void exitMethodType(pl_pas_assParser.MethodTypeContext ctx) {
 
     }
 
@@ -665,6 +685,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitTag(pl_pas_assParser.TagContext ctx) {
+
+    }
+
+    @Override
+    public void enterIfcBlock(pl_pas_assParser.IfcBlockContext ctx) {
+
+    }
+
+    @Override
+    public void exitIfcBlock(pl_pas_assParser.IfcBlockContext ctx) {
 
     }
 
@@ -1085,6 +1115,16 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitLabelDeclarationPart(pl_pas_assParser.LabelDeclarationPartContext ctx) {
+
+    }
+
+    @Override
+    public void enterMemberType(pl_pas_assParser.MemberTypeContext ctx) {
+
+    }
+
+    @Override
+    public void exitMemberType(pl_pas_assParser.MemberTypeContext ctx) {
 
     }
 

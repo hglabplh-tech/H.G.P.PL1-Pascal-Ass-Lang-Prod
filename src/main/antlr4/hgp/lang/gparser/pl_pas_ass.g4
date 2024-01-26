@@ -73,14 +73,14 @@ block
         | variableDeclarationPart
         | procedureAndFunctionDeclarationPart
         | usesUnitsPart
-
         | IMPLEMENTATION
 
     )* compoundStatement
     ;
 
 progClassBlock
-    : (classDeclarationPart)* compoundStatement
+    : (classDeclarationPart
+       interfaceDeclarationPart)* compoundStatement
     ;
 
 classBlock
@@ -92,9 +92,21 @@ classBlock
      )* compoundStatement
      ;
 
+ifcBlock
+     : (
+           methodType
+        | memberType
+        | IMPLEMENTATION
+     )* compoundStatement
+     ;
+
 
 classDeclarationPart
     : modifier CLASS identifier clModDecl classBlock
+    ;
+
+interfaceDeclarationPart
+    : CLASSINTERFACE identifier clModDecl ifcBlock
     ;
 
 
@@ -177,16 +189,24 @@ typeDefinitionPart
     : TYPE (typeDefinition SEMI)+
     ;
 
+memberType
+    : MEMBER identifier typeDefinition SEMI
+    ;
+
 typeDefinition
     : identifier EQUAL (type_ | functionType | procedureType)
     ;
 
 functionType
-    : FUNCTION (formalParameterList)? COLON resultType
+    : FUNCTION identifier (formalParameterList)? COLON resultType
+    ;
+
+methodType
+    : FUNCTION identifier (formalParameterList)? COLON resultType
     ;
 
 lambdaTopLevelType
-     : DEFINE (formalParameterList)? RESULTPTR resultType
+     : DEFINE identifier (formalParameterList)? RESULTPTR resultType
      ;
 
 procedureType
@@ -346,6 +366,7 @@ formalParameterSection
     | FUNCTION parameterGroup
     | PROCEDURE parameterGroup
     | LAMBDA parameterGroup
+    | ASSFUN parameterGroup
     ;
 
 parameterGroup
@@ -889,6 +910,9 @@ FALSE
 CLASS
     : 'CLASS'
     ;
+CLASSINTERFACE
+     : 'CLASSINTERFACE'
+     ;
 
 PUBLIC
     : 'PUBLIC'
