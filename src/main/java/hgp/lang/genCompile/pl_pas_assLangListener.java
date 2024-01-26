@@ -4,6 +4,7 @@ import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
 import hgp.lang.gparser.pl_pas_assParser;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -36,6 +37,18 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
     public void exitFixedPart(pl_pas_assParser.FixedPartContext ctx) {
 
     }
+
+    public void enterAssFunDeclaration(@NotNull pl_pas_assParser.AssFunDeclarationContext ctx) {
+
+    }
+    /**
+     * Exit a parse tree produced by {@link pl_pas_assParser#assFunDeclaration}.
+     * @param ctx the parse tree
+     */
+    public void exitAssFunDeclaration(@NotNull pl_pas_assParser.AssFunDeclarationContext ctx) {
+
+    }
+
 
     @Override
     public void enterEmptyStatement_(pl_pas_assParser.EmptyStatement_Context ctx) {

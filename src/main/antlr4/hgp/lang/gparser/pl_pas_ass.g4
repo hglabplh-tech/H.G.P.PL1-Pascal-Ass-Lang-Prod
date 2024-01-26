@@ -186,7 +186,7 @@ functionType
     ;
 
 lambdaTopLevelType
-     : DEFINE (formalParameterList)? COLON resultType
+     : DEFINE (formalParameterList)? RESULTPTR resultType
      ;
 
 procedureType
@@ -312,6 +312,8 @@ memberVariableDeclarationPart
     : MEMBER modifier variableDeclaration (SEMI variableDeclaration)* SEMI
     ;
 
+
+
 variableDeclaration
     : identifierList COLON type_
     ;
@@ -325,6 +327,7 @@ procedureOrFunctionDeclaration
     : procedureDeclaration
     | lambdaDeclaration
     | functionDeclaration
+    | assFunDeclaration
     ;
 
 procedureDeclaration
@@ -359,6 +362,10 @@ constList
 
 functionDeclaration
     : FUNCTION identifier (formalParameterList)? COLON resultType SEMI block
+    ;
+
+assFunDeclaration
+    : ASSFUN identifier (formalParameterList)? COLON resultType SEMI block
     ;
 
 lambdaDeclaration
@@ -644,6 +651,10 @@ FUNCTION
     : 'FUNCTION'
     ;
 
+ASSFUN
+    : 'ASSFUN'
+    ;
+
 GOTO
     : 'GOTO'
     ;
@@ -873,6 +884,10 @@ TRUE
 
 FALSE
     : 'FALSE'
+    ;
+
+CLASS
+    : 'CLASS'
     ;
 
 PUBLIC
