@@ -1,17 +1,19 @@
 package hgp.lang.bootstrap.runtime;
 
-public class Tuple<K,V> {
+public class Tuple<Integer,V> {
 
-    private final K key;
+    private final Integer key;
 
     private final V value;
 
-    public Tuple(K theKey, V theValue) {
-        this.key = theKey;
-        this.value = theValue;
+
+
+    public Tuple(Integer addrKey, V storage) {
+        this.key = addrKey;
+        this.value = storage;
     }
 
-    public K getKey() {
+    public Integer getKey() {
         return key;
     }
 

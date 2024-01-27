@@ -1,20 +1,75 @@
 package hgp.lang.bootstrap.runtime;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class RibCacheEnv {
 
-    private static final Map<String, Address> environment = new HashMap<>();
+    private static  RibCacheEnv instance = null;
 
-    static class Address  {
-        private final Tuple<Integer, Object> addressAndStorage;
 
-        Address(Integer addrKey, Object storage) {
-            addressAndStorage = new Tuple<Integer, Object>(addrKey, storage);
+    private static final List<Map<Integer, Address>> env = new ArrayList<>();
+
+    private final List<Map<Integer, Address>> stackEnv;
+
+    public RibCacheEnv(List<Map<Integer, Address>> newEnv) {
+        stackEnv = newEnv;
+    }
+    public void pushStackEnv(Map<Integer, Address> newSub) {
+        stackEnv.add(0, newSub);
+    }
+
+    public Map<Integer, Address> popStackEnv() {
+        stackEnv.remove(0);
+        Map<Integer, Address>  result = stackEnv.get(0);
+        return result;
+    }
+
+    public static RibCacheEnv getInstance() {
+        if (instance == null) {
+            return new RibCacheEnv(env);
+        }
+        return instance;
+    }
+
+    public Optional<Map<Integer, Address>> giveCheckedEnv() {
+        return (!stackEnv.isEmpty()) ?
+                Optional.of(stackEnv.get(0)) :
+                Optional.empty();
+    }
+
+    public Address getStorValue(Integer key) {
+        Optional<Map<Integer, Address>> addressMap = giveCheckedEnv();
+        if (addressMap.isPresent()) {
+            return addressMap.get().get(key);
+        }
+        return null;
+
+    }
+
+    public void putStorValue(Integer key, Object value) {
+        Optional<Map<Integer, Address>> addressMap = giveCheckedEnv();
+        if (addressMap.isPresent()) {
+            Address<Integer, Object> tuple = new Address<>(key, value);
+            addressMap.get().put(key, tuple);
+        }
+    }
+
+    public void removeStor(Integer key, Object value) {
+        Optional<Map<Integer, Address>> addressMap = giveCheckedEnv();
+        if (addressMap.isPresent()) {
+            addressMap.get().remove(key);
+        }
+    }
+
+
+    public static class Address<Integer, A>  {
+        private final Tuple<Integer, A> addressAndStorage;
+
+        public Address(Integer addrKey, A storage) {
+            addressAndStorage = new Tuple<Integer, A>(addrKey, storage);
         }
 
-        public Tuple<Integer, Object> getAddressAndStorage() {
+        public Tuple<Integer, A> getAddressAndStorage() {
             return addressAndStorage;
         }
     }
