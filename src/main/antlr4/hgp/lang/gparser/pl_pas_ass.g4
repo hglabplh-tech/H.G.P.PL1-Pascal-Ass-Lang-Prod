@@ -396,7 +396,7 @@ assFunDeclaration
     ;
 
 lambdaDeclaration
-    : '('ANONYMOUS  (formalParameterList)?')' RESULTPTR resultType SEMI block
+    : ANONYMOUS (formalParameterList)?  RESULTPTR resultType SEMI block
     ;
 
 
@@ -440,8 +440,8 @@ variable
     ;
 
 expression
-    : lambdaDeclaration
-        simpleExpression (relationaloperator expression)?
+    : (lambdaDeclaration
+               simpleExpression (relationaloperator expression)?)*
     ;
 
 relationaloperator
