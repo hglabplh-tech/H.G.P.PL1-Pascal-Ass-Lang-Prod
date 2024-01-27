@@ -2,16 +2,16 @@ package hgp.lang.bootstrap.runtime;
 
 import java.util.*;
 
-public class RibCacheEnv {
+public class RibCageEnv {
 
-    private static  RibCacheEnv instance = null;
+    private static RibCageEnv instance = null;
 
 
     private static final List<Map<Integer, Address>> env = new ArrayList<>();
 
     private final List<Map<Integer, Address>> stackEnv;
 
-    public RibCacheEnv(List<Map<Integer, Address>> newEnv) {
+    public RibCageEnv(List<Map<Integer, Address>> newEnv) {
         stackEnv = newEnv;
     }
     public void pushStackEnv(Map<Integer, Address> newSub) {
@@ -24,9 +24,9 @@ public class RibCacheEnv {
         return result;
     }
 
-    public static RibCacheEnv getInstance() {
+    public static RibCageEnv getInstance() {
         if (instance == null) {
-            return new RibCacheEnv(env);
+            return new RibCageEnv(env);
         }
         return instance;
     }
@@ -53,6 +53,7 @@ public class RibCacheEnv {
             addressMap.get().put(key, tuple);
         }
     }
+
 
     public void removeStor(Integer key, Object value) {
         Optional<Map<Integer, Address>> addressMap = giveCheckedEnv();
