@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class pl_pas_assLangListener
+public class pl_pas_assLangListener extends pl_pas_assBaseListener
         implements pl_pas_assListener {
     @Override
     public void enterSet_(pl_pas_assParser.Set_Context ctx) {

@@ -1,13 +1,15 @@
 package hgp.lang.genCompile
         ;
 
+import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
 import hgp.lang.gparser.pl_pas_assParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class ParseTestListener implements pl_pas_assListener {
+public class ParseTestListener extends pl_pas_assBaseListener
+        implements pl_pas_assListener {
     @Override
     public void enterSet_(pl_pas_assParser.Set_Context ctx) {
 
