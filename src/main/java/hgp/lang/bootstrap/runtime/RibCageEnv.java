@@ -55,7 +55,7 @@ public class RibCageEnv {
     }
 
 
-    public void removeStor(Integer key, Object value) {
+    public void removeStor(Integer key) {
         Optional<Map<Integer, Address>> addressMap = giveCheckedEnv();
         if (addressMap.isPresent()) {
             addressMap.get().remove(key);
