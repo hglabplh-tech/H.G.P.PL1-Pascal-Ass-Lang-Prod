@@ -45,6 +45,7 @@ grammar pl_pas_ass;
 options {
 
     language=Java;
+    caseInsensitive = true;
 }
 
 

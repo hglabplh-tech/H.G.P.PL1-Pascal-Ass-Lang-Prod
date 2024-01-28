@@ -1,6 +1,6 @@
 package hgp.lang.bootstrap.parselex;
 
-import hgp.lang.genCompile.pl_pas_assLangListener;
+import hgp.lang.genCompile.pl_pas_assLangVisitor;
 import hgp.lang.gparser.pl_pas_assLexer;
 import hgp.lang.gparser.pl_pas_assParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -18,7 +18,7 @@ public class PlPassAss {
             pl_pas_assParser parser = new pl_pas_assParser(tokens);
             ParseTree tree = parser.initialValue();
             ParseTreeWalker walker = new ParseTreeWalker();
-            walker.walk(new pl_pas_assLangListener(), tree);
+
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }

@@ -1,7 +1,6 @@
-
-program HelloWorld;   
-begin    
+PROGRAM HelloWorld;
+begin;
  write('Hello World.');
  readln;   
-end.
+END.
 
