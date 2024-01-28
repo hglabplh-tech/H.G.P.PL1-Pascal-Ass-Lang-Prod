@@ -1,5 +1,4 @@
-package hgp.lang.genCompile
-        ;
+package hgp.lang.genCompile;
 
 import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
@@ -8,7 +7,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class ParseTestListener extends pl_pas_assBaseListener
+public class ParseLangTestListener extends pl_pas_assBaseListener
         implements pl_pas_assListener {
     @Override
     public void enterSet_(pl_pas_assParser.Set_Context ctx) {
@@ -272,6 +271,7 @@ public class ParseTestListener extends pl_pas_assBaseListener
 
     @Override
     public void enterAssignmentStatement(pl_pas_assParser.AssignmentStatementContext ctx) {
+        System.out.println(ctx.ASSIGN().getSymbol());
 
     }
 
@@ -412,11 +412,12 @@ public class ParseTestListener extends pl_pas_assBaseListener
 
     @Override
     public void enterExpression(pl_pas_assParser.ExpressionContext ctx) {
-
+        System.out.println(ctx.expression());
     }
 
     @Override
     public void exitExpression(pl_pas_assParser.ExpressionContext ctx) {
+        System.out.println(ctx.expression());
 
     }
 
@@ -472,7 +473,7 @@ public class ParseTestListener extends pl_pas_assBaseListener
 
     @Override
     public void enterVariableDeclaration(pl_pas_assParser.VariableDeclarationContext ctx) {
-
+            ctx.identifierList().identifier();
     }
 
     @Override
@@ -1072,12 +1073,12 @@ public class ParseTestListener extends pl_pas_assBaseListener
 
     @Override
     public void enterIfStatement(pl_pas_assParser.IfStatementContext ctx) {
-
+        System.out.println(ctx.statement().get(0).COLON());
     }
 
     @Override
     public void exitIfStatement(pl_pas_assParser.IfStatementContext ctx) {
-
+        System.out.println(ctx.statement().get(0).COLON());
     }
 
     @Override

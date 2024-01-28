@@ -281,7 +281,9 @@ public class pl_pas_assLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterAssignmentStatement(pl_pas_assParser.AssignmentStatementContext ctx) {
-
+        System.out.println(ctx.ASSIGN().getSymbol());
+       /* ctx.expression().simpleExpression().get(0).simpleExpression().additiveoperator()
+        ctx.expression().simpleExpression().get(0).simpleExpression().; */
     }
 
     @Override
