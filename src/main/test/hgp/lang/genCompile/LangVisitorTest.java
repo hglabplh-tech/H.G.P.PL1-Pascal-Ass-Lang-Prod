@@ -21,7 +21,7 @@ public class LangVisitorTest {
         try {
             ANTLRInputStream input =
                     new ANTLRInputStream(
-                            getResourceByPath("/resources/basics/helloworld.pas"));
+                            getResourceByPath("/resources/basics/947.pas"));
 
             pl_pas_assLexer lexer = new pl_pas_assLexer((input));
             CommonTokenStream tokens = new CommonTokenStream(lexer);

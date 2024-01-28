@@ -22,7 +22,7 @@ public class TestLangVisitor<T> extends pl_pas_assBaseVisitor<T>
 
     
     public T visitTheblocks(pl_pas_assParser.TheblocksContext ctx) {
-        System.err.println(ctx.block(0).compoundStatement().statements());
+        System.err.println(ctx.block().compoundStatement().statements());
         return null;
     }
 

@@ -56,13 +56,13 @@ program
 theblocks
 : (block
 | progClassBlock
-)* compoundStatement
+)
 ;
 
 
 programHeading
-    : PROGRAM identifier (LPAREN identifierList RPAREN)? SEMI
-    | UNIT identifier SEMI
+    : PROGRAM identifier (LPAREN identifierList RPAREN)? SEMICOLON
+    | UNIT identifier SEMICOLON
     ;
 
 identifier
@@ -84,7 +84,7 @@ block
 
 progClassBlock
     : (classDeclarationPart
-       interfaceDeclarationPart)* compoundStatement
+       interfaceDeclarationPart)
     ;
 
 classBlock
@@ -93,7 +93,7 @@ classBlock
         | methodDeclaration
         | classDeclarationPart
         | IMPLEMENTATION
-     )* compoundStatement
+     )
      ;
 
 ifcBlock
@@ -101,7 +101,7 @@ ifcBlock
            methodType
         | memberType
         | IMPLEMENTATION
-     )* compoundStatement
+     )
      ;
 
 
@@ -130,11 +130,11 @@ modifier
         ;
 
 usesUnitsPart
-    : USES identifierList SEMI
+    : USES identifierList SEMICOLON
     ;
 
 labelDeclarationPart
-    : LABEL label (COMMA label)* SEMI
+    : LABEL label (COMMA label)* SEMICOLON
     ;
 
 label
@@ -142,7 +142,7 @@ label
     ;
 
 constantDefinitionPart
-    : CONST (constantDefinition SEMI)+
+    : CONST (constantDefinition SEMICOLON)+
     ;
 
 constantDefinition
@@ -190,11 +190,11 @@ string
     ;
 
 typeDefinitionPart
-    : TYPE (typeDefinition SEMI)+
+    : TYPE (typeDefinition SEMICOLON)+
     ;
 
 memberType
-    : MEMBER identifier typeDefinition SEMI
+    : MEMBER identifier typeDefinition SEMICOLON
     ;
 
 typeDefinition
@@ -282,12 +282,12 @@ recordType
     ;
 
 fieldList
-    : fixedPart (SEMI variantPart)?
+    : fixedPart (SEMICOLON variantPart)?
     | variantPart
     ;
 
 fixedPart
-    : recordSection (SEMI recordSection)*
+    : recordSection (SEMICOLON recordSection)*
     ;
 
 recordSection
@@ -295,7 +295,7 @@ recordSection
     ;
 
 variantPart
-    : CASE tag OF variant (SEMI variant)*
+    : CASE tag OF variant (SEMICOLON variant)*
     ;
 
 tag
@@ -329,11 +329,11 @@ pointerType
     ;
 
 variableDeclarationPart
-    : VAR variableDeclaration (SEMI variableDeclaration)* SEMI
+    : VAR variableDeclaration (SEMICOLON variableDeclaration)* SEMICOLON
     ;
 
 memberVariableDeclarationPart
-    : MEMBER modifier variableDeclaration (SEMI variableDeclaration)* SEMI
+    : MEMBER modifier variableDeclaration (SEMICOLON variableDeclaration)* SEMICOLON
     ;
 
 
@@ -344,7 +344,7 @@ variableDeclaration
 
 
 procedureAndFunctionDeclarationPart
-    : procedureOrFunctionDeclaration SEMI
+    : procedureOrFunctionDeclaration SEMICOLON
     ;
 
 procedureOrFunctionDeclaration
@@ -355,13 +355,13 @@ procedureOrFunctionDeclaration
     ;
 
 procedureDeclaration
-    : PROCEDURE identifier (formalParameterList)? SEMI block
+    : PROCEDURE identifier (formalParameterList)? SEMICOLON block
     ;
 
 
 
 formalParameterList
-    : LPAREN formalParameterSection (SEMI formalParameterSection)* RPAREN
+    : LPAREN formalParameterSection (SEMICOLON formalParameterSection)* RPAREN
     ;
 
 formalParameterSection
@@ -386,23 +386,23 @@ constList
     ;
 
 functionDeclaration
-    : FUNCTION identifier (formalParameterList)? COLON resultType SEMI block
+    : FUNCTION identifier (formalParameterList)? COLON resultType SEMICOLON block
     ;
 
 assblock
     :LBRACK ASS_STRING RBRACK;
 
 assFunDeclaration
-    : ASSFUN identifier (formalParameterList)? COLON resultType SEMI assblock
+    : ASSFUN identifier (formalParameterList)? COLON resultType SEMICOLON assblock
     ;
 
 lambdaDeclaration
-    : ANONYMOUS (formalParameterList)?  RESULTPTR resultType SEMI block
+    : ANONYMOUS (formalParameterList)?  RESULTPTR resultType SEMICOLON block
     ;
 
 
 methodDeclaration
-     : METHOD  modifier identifier (formalParameterList)? SEMI block
+     : METHOD  modifier identifier (formalParameterList)? SEMICOLON block
      ;
 
 resultType
@@ -442,7 +442,7 @@ variable
 
 expression
     : (lambdaDeclaration
-               simpleExpression (relationaloperator expression)?)*
+              | simpleExpression (relationaloperator expression)?)*
     ;
 
 relationaloperator
@@ -553,11 +553,11 @@ structuredStatement
     ;
 
 compoundStatement
-    : BEGIN statements END
+    : BEGIN  statements END
     ;
 
 statements
-    : statement (SEMI statement)*
+    : statement (SEMICOLON statement)*
     ;
 
 conditionalStatement
@@ -570,7 +570,7 @@ ifStatement
     ;
 
 caseStatement
-    : CASE expression OF caseListElement (SEMI caseListElement)* (SEMI ELSE statements)? END
+    : CASE expression OF caseListElement (SEMICOLON caseListElement)* (SEMICOLON ELSE statements)? END
     ;
 
 caseListElement
@@ -614,6 +614,8 @@ withStatement
 recordVariableList
     : variable (COMMA variable)*
     ;
+
+
 
 AND
     : 'AND'
@@ -806,7 +808,7 @@ RESULTPTR
     : '->'
     ;
 
-SEMI
+SEMICOLON
     : ';'
     ;
 
@@ -979,8 +981,9 @@ IDENT
     ;
 
 STRING_LITERAL
-    : '\'' ('\'\'' | ~ ('\''))* '\''
+   : '\''.*?'\''  //: '\'' ('\'\'' | ~ ('\''))* '\''
     ;
+
 ASS_STRING
     : .*?
     ;
@@ -996,3 +999,7 @@ NUM_REAL
 fragment EXPONENT
     : ('E') ('+' | '-')? ('0' .. '9')+
     ;
+
+EOL
+: [\n]
+;
