@@ -1,2 +1,4 @@
+.idea
 /target/
-/H.G.P.PL1-Pascal-Ass-Lang.iml
+*.iml
+/PL_ASS_Compiler/target/

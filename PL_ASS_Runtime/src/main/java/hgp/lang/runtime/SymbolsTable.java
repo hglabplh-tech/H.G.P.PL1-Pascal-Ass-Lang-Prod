@@ -1,4 +1,4 @@
-package hgp.lang.bootstrap.runtime;
+package hgp.lang.runtime;
 
 import java.util.HashMap;
 import java.util.Map;

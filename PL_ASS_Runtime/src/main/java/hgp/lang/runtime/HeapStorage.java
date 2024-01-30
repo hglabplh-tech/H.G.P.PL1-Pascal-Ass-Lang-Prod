@@ -1,4 +1,4 @@
-package hgp.lang.bootstrap.runtime;
+package hgp.lang.runtime;
 
 public class HeapStorage {
 

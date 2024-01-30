@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>hgp.genbytec</groupId>
   <artifactId>H.G.P.PL1-Pascal-Ass-Lang</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <version>1.0.0-SNAPSHOT</version>
   <name>H.G.P.PL1-Pascal-Ass-Lang</name>
   <description>H.G.P.PL1-Pascal-Ass-Lang</description>
@@ -16,6 +16,11 @@
   <scm>
     <tag>f0bcfd79d68e2554a05b7c33315e9a2227e73b80</tag>
   </scm>
+  <modules>
+    <module>PL_ASS_Common</module>
+    <module>PL_ASS_Compiler</module>
+    <module>PL_ASS_Runtime</module>
+  </modules>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <testSourceDirectory>src/test</testSourceDirectory>

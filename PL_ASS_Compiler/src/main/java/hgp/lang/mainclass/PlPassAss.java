@@ -1,4 +1,4 @@
-package hgp.lang.bootstrap.parselex;
+package hgp.lang.mainclass;
 
 import hgp.lang.genCompile.PlPasAssLangVisitor;
 import hgp.lang.genCompile.PrivateVisitContext;
@@ -32,8 +32,8 @@ public class PlPassAss {
             ParseTree tree = parser.program();
             ParseTreeWalker walker = ParseTreeWalker.DEFAULT;
             walker.walk(new pl_pas_assBaseListener(), tree);
-            PlPasAssLangVisitor<PrivateVisitContext> myVisitor
-                    = new PlPasAssLangVisitor<>();
+            PlPasAssLangVisitor<hgp.lang.genCompile.PrivateVisitContext> myVisitor
+                    = new PlPasAssLangVisitor<PrivateVisitContext>();
 
             myVisitor.visitChildren((RuleNode) tree);
             tree.accept(myVisitor);
