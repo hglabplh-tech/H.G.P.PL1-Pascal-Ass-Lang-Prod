@@ -10,7 +10,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
 
-public class PlPassAssLangListener extends pl_pas_assBaseListener
+public class PlPasAssLangListener extends pl_pas_assBaseListener
         implements pl_pas_assListener {
     @Override
     public void enterProgram(pl_pas_assParser.ProgramContext ctx) {

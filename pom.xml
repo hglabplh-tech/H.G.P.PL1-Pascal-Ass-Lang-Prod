@@ -4,7 +4,11 @@
   <groupId>hgp.genbytec</groupId>
   <artifactId>H.G.P.PL1-Pascal-Ass-Lang</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.0-SNAPSHOT</version>
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+    <version>1.0.0-SNAPSHOT</version>
   <name>H.G.P.PL1-Pascal-Ass-Lang</name>
   <description>H.G.P.PL1-Pascal-Ass-Lang</description>
   <licenses>
