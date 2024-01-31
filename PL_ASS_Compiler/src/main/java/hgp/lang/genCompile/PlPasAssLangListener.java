@@ -6,11 +6,11 @@ import hgp.lang.genCompile.langblocks.BeginBlock;
 import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
 import hgp.lang.gparser.pl_pas_assParser;
-import hgp.lang.gparser.pl_pas_assParser.FormalParameterListContext;
-import hgp.lang.gparser.pl_pas_assParser.FormalParameterSectionContext;
-import hgp.lang.gparser.pl_pas_assParser.StatementContext;
+import hgp.lang.gparser.pl_pas_assParser.*;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
@@ -330,18 +330,22 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     @Override
     public void exitFunctionType(pl_pas_assParser.FunctionTypeContext ctx) {
         FormalParameterListContext listCtx = ctx.formalParameterList();
-        if (listCtx != null){
+        if (listCtx != null) {
             List<FormalParameterSectionContext> formalParmList =
                     listCtx.formalParameterSection();
-            for (FormalParameterSectionContext sectionCtx : formalParmList ) {
+            for (FormalParameterSectionContext sectionCtx : formalParmList) {
                 TerminalNode fun = sectionCtx.FUNCTION();
                 TerminalNode var = sectionCtx.VAR();
                 TerminalNode lambda = sectionCtx.LAMBDA();
+
+
+                traceSectionCtx(sectionCtx);
                 if (fun != null) {
-                     fun.getSymbol().getType();
+                    fun.getSymbol().getType();
                 }
                 if (var != null) {
                     var.getSymbol().getType();
+
                 }
                 if (lambda != null) {
                     lambda.getSymbol().getType();
@@ -350,6 +354,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         }
 
     }
+
 
     @Override
     public void enterMethodType(pl_pas_assParser.MethodTypeContext ctx) {
@@ -740,12 +745,12 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                 ctx.formalParameterList();
         List<FormalParameterSectionContext> formalParmsSection =
                 formalParms.formalParameterSection();
-        for(FormalParameterSectionContext sectionContext : formalParmsSection) {
+        for (FormalParameterSectionContext sectionContext : formalParmsSection) {
             TerminalNode funNode = sectionContext.FUNCTION();
             if (funNode != null) {
                 Integer parmLineNo = funNode.getSymbol().getLine();
                 Integer parmType = funNode.getSymbol().getType();
-                String  parmName = funNode.getSymbol().getText();
+                String parmName = funNode.getSymbol().getText();
             }
 
         }
@@ -760,15 +765,16 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     @Override
     public void exitFunctionDeclaration(pl_pas_assParser.FunctionDeclarationContext ctx) {
         FormalParameterListContext listCtx = ctx.formalParameterList();
-        if (listCtx != null){
+        if (listCtx != null) {
             List<FormalParameterSectionContext> formalParmList =
                     listCtx.formalParameterSection();
-            for (FormalParameterSectionContext sectionCtx : formalParmList ) {
+            for (FormalParameterSectionContext sectionCtx : formalParmList) {
                 TerminalNode fun = sectionCtx.FUNCTION();
                 TerminalNode assFun = sectionCtx.ASSFUN();
                 TerminalNode procedure = sectionCtx.PROCEDURE();
                 TerminalNode var = sectionCtx.VAR();
                 TerminalNode lambda = sectionCtx.LAMBDA();
+                traceSectionCtx(sectionCtx);
                 if (fun != null) {
                     fun.getSymbol().getType();
                 }
@@ -786,7 +792,6 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                 }
             }
         }
-
 
 
     }
@@ -833,7 +838,13 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterResultType(pl_pas_assParser.ResultTypeContext ctx) {
-
+        TypeIdentifierContext resultTypeCtx = ctx.typeIdentifier();
+        if (resultTypeCtx != null) {
+            IdentifierContext idCtx = resultTypeCtx.identifier();
+            if (idCtx != null) {
+                Token idSymbol = idCtx.IDENT().getSymbol();
+            }
+        }
     }
 
     @Override
@@ -912,12 +923,12 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     }
 
     @Override
-    public void enterSimpleExpression(pl_pas_assParser.SimpleExpressionContext ctx) {
+    public void enterSimpleExpression(SimpleExpressionContext ctx) {
 
     }
 
     @Override
-    public void exitSimpleExpression(pl_pas_assParser.SimpleExpressionContext ctx) {
+    public void exitSimpleExpression(SimpleExpressionContext ctx) {
 
     }
 
@@ -983,7 +994,15 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterFunctionDesignator(pl_pas_assParser.FunctionDesignatorContext ctx) {
+        List<ActualParameterContext> actParmList =
+                ctx.parameterList().actualParameter();
+        ExpressionContext exprCtx = ctx.parameterList().actualParameter(0).expression();
+        for (ActualParameterContext parmCtx : actParmList) {
+            List<SimpleExpressionContext> simpleExprList =
+                    parmCtx.expression().simpleExpression();
 
+
+        }
     }
 
     @Override
@@ -1042,12 +1061,12 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     }
 
     @Override
-    public void enterActualParameter(pl_pas_assParser.ActualParameterContext ctx) {
+    public void enterActualParameter(ActualParameterContext ctx) {
 
     }
 
     @Override
-    public void exitActualParameter(pl_pas_assParser.ActualParameterContext ctx) {
+    public void exitActualParameter(ActualParameterContext ctx) {
 
     }
 
@@ -1272,5 +1291,53 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     @Override
     public void exitEveryRule(ParserRuleContext parserRuleContext) {
 
+    }
+
+    private static void traceSectionCtx(FormalParameterSectionContext sectionCtx) {
+        for (Integer count = 0; count < sectionCtx.getChildCount(); count++) {
+            ParseTree childObj = sectionCtx.getChild(count);
+            if (childObj instanceof ParameterGroupContext) {
+                ParameterGroupContext parmGroupCtx = (ParameterGroupContext) childObj;
+                TypeIdentifierContext typeCtx = parmGroupCtx.typeIdentifier();
+                IdentifierListContext idList = parmGroupCtx.identifierList();
+                IdentifierContext typeIdCtx = typeCtx.identifier();
+                if (typeIdCtx != null) {
+                    TerminalNode typeIdent = typeIdCtx.IDENT();
+                    TerminalNode theType = null;
+                    if (typeCtx.BOOLEAN() != null) {
+                        theType = typeCtx.BOOLEAN();
+                    } else if (typeCtx.REAL() != null) {
+                        theType = typeCtx.REAL();
+                    }  else if (typeCtx.INTEGER() != null) {
+                        theType = typeCtx.INTEGER();
+                    }  else if (typeCtx.STRING() != null) {
+                        theType = typeCtx.STRING();
+                    }
+                    if (theType != null) {
+                        Token symbol = theType.getSymbol();
+                        Integer idType = symbol.getType();
+                        String idText =  symbol.getText();
+                        Integer lineNo = symbol.getLine();
+                        System.err.println("First ID type: " + idType
+                                + "the idText: " + idText
+                                + "the id line number: " + lineNo);
+                    }
+                    Integer theIdType = typeIdent.getSymbol().getType();
+                    System.err.println("Type of Return? :" + theIdType);
+
+                }
+
+                for (IdentifierContext idCtx : idList.identifier()) {
+                    Integer idType = idCtx.IDENT().getSymbol().getType();
+                    String idText = idCtx.IDENT().getSymbol().getText();
+                    Integer lineNo = idCtx.IDENT().getSymbol().getLine();
+                    System.err.println("ID type: " + idType
+                            + " idText: " + idText
+                            + " id line number: " + lineNo);
+                }
+
+
+            }
+        }
     }
 }
