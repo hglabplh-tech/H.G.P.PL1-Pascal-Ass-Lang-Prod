@@ -1301,8 +1301,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                 TypeIdentifierContext typeCtx = parmGroupCtx.typeIdentifier();
                 IdentifierListContext idList = parmGroupCtx.identifierList();
                 IdentifierContext typeIdCtx = typeCtx.identifier();
-                if (typeIdCtx != null) {
-                    TerminalNode typeIdent = typeIdCtx.IDENT();
+                if (typeCtx != null) {
                     TerminalNode theType = null;
                     if (typeCtx.BOOLEAN() != null) {
                         theType = typeCtx.BOOLEAN();
@@ -1319,11 +1318,14 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                         String idText =  symbol.getText();
                         Integer lineNo = symbol.getLine();
                         System.err.println("First ID type: " + idType
-                                + "the idText: " + idText
-                                + "the id line number: " + lineNo);
+                                + " / the id Text: " + idText
+                                + " / the id line number: " + lineNo);
                     }
-                    Integer theIdType = typeIdent.getSymbol().getType();
+                    if (typeIdCtx != null) {
+                        TerminalNode typeIdIdent = typeIdCtx.IDENT();
+                    Integer theIdType = typeIdIdent.getSymbol().getType();
                     System.err.println("Type of Return? :" + theIdType);
+                    }
 
                 }
 
