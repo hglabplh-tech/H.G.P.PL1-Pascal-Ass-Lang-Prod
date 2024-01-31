@@ -4,6 +4,7 @@ import clojure.lang.Atom;
 import clojure.lang.IFn;
 import clojure.lang.ISeq;
 import clojure.lang.Symbol;
+import hgp.lang.genCompile.langblocks.BlockClassBase;
 
 import java.util.HashMap;
 import java.util.Map;

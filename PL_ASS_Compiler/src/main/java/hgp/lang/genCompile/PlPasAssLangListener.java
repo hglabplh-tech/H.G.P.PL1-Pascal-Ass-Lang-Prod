@@ -1,9 +1,14 @@
 package hgp.lang.genCompile;
 
 
+import clojure.lang.Symbol;
+import hgp.lang.genCompile.langblocks.BeginBlock;
 import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
 import hgp.lang.gparser.pl_pas_assParser;
+import hgp.lang.gparser.pl_pas_assParser.FormalParameterListContext;
+import hgp.lang.gparser.pl_pas_assParser.FormalParameterSectionContext;
+import hgp.lang.gparser.pl_pas_assParser.StatementContext;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -12,6 +17,13 @@ import java.util.List;
 
 public class PlPasAssLangListener extends pl_pas_assBaseListener
         implements pl_pas_assListener {
+
+    private final CummulationThread collector;
+
+    public PlPasAssLangListener(CummulationThread collector) {
+        this.collector = collector;
+    }
+
     @Override
     public void enterProgram(pl_pas_assParser.ProgramContext ctx) {
         ctx.programHeading().identifier().IDENT().getSymbol();
@@ -24,12 +36,14 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterTheblocks(pl_pas_assParser.TheblocksContext ctx) {
-        List<pl_pas_assParser.StatementContext> statements =
+        BeginBlock begin = new BeginBlock();
+        List<StatementContext> statements =
                 ctx.block().compoundStatement().statements().statement();
-        for (pl_pas_assParser.StatementContext stmt : statements) {
+        for (StatementContext stmt : statements) {
             stmt.unlabelledStatement().simpleStatement();
         }
-
+        Symbol key = Symbol.create("beginBlock");
+        this.collector.addBlockClass(key, begin);
 
     }
 
@@ -315,6 +329,25 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitFunctionType(pl_pas_assParser.FunctionTypeContext ctx) {
+        FormalParameterListContext listCtx = ctx.formalParameterList();
+        if (listCtx != null){
+            List<FormalParameterSectionContext> formalParmList =
+                    listCtx.formalParameterSection();
+            for (FormalParameterSectionContext sectionCtx : formalParmList ) {
+                TerminalNode fun = sectionCtx.FUNCTION();
+                TerminalNode var = sectionCtx.VAR();
+                TerminalNode lambda = sectionCtx.LAMBDA();
+                if (fun != null) {
+                     fun.getSymbol().getType();
+                }
+                if (var != null) {
+                    var.getSymbol().getType();
+                }
+                if (lambda != null) {
+                    lambda.getSymbol().getType();
+                }
+            }
+        }
 
     }
 
@@ -649,22 +682,22 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     }
 
     @Override
-    public void enterFormalParameterList(pl_pas_assParser.FormalParameterListContext ctx) {
+    public void enterFormalParameterList(FormalParameterListContext ctx) {
 
     }
 
     @Override
-    public void exitFormalParameterList(pl_pas_assParser.FormalParameterListContext ctx) {
+    public void exitFormalParameterList(FormalParameterListContext ctx) {
 
     }
 
     @Override
-    public void enterFormalParameterSection(pl_pas_assParser.FormalParameterSectionContext ctx) {
+    public void enterFormalParameterSection(FormalParameterSectionContext ctx) {
 
     }
 
     @Override
-    public void exitFormalParameterSection(pl_pas_assParser.FormalParameterSectionContext ctx) {
+    public void exitFormalParameterSection(FormalParameterSectionContext ctx) {
 
     }
 
@@ -700,11 +733,61 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterFunctionDeclaration(pl_pas_assParser.FunctionDeclarationContext ctx) {
+        String funName = ctx.FUNCTION().getSymbol().getText();
+        Integer type = ctx.FUNCTION().getSymbol().getType();
+        Integer lineNo = ctx.FUNCTION().getSymbol().getLine();
+        FormalParameterListContext formalParms =
+                ctx.formalParameterList();
+        List<FormalParameterSectionContext> formalParmsSection =
+                formalParms.formalParameterSection();
+        for(FormalParameterSectionContext sectionContext : formalParmsSection) {
+            TerminalNode funNode = sectionContext.FUNCTION();
+            if (funNode != null) {
+                Integer parmLineNo = funNode.getSymbol().getLine();
+                Integer parmType = funNode.getSymbol().getType();
+                String  parmName = funNode.getSymbol().getText();
+            }
 
+        }
+        List<StatementContext> statements =
+                ctx.block().compoundStatement()
+                        .statements().statement();
+        for (StatementContext stmtContext : statements) {
+            stmtContext.unlabelledStatement().structuredStatement();
+        }
     }
 
     @Override
     public void exitFunctionDeclaration(pl_pas_assParser.FunctionDeclarationContext ctx) {
+        FormalParameterListContext listCtx = ctx.formalParameterList();
+        if (listCtx != null){
+            List<FormalParameterSectionContext> formalParmList =
+                    listCtx.formalParameterSection();
+            for (FormalParameterSectionContext sectionCtx : formalParmList ) {
+                TerminalNode fun = sectionCtx.FUNCTION();
+                TerminalNode assFun = sectionCtx.ASSFUN();
+                TerminalNode procedure = sectionCtx.PROCEDURE();
+                TerminalNode var = sectionCtx.VAR();
+                TerminalNode lambda = sectionCtx.LAMBDA();
+                if (fun != null) {
+                    fun.getSymbol().getType();
+                }
+                if (var != null) {
+                    var.getSymbol().getType();
+                }
+                if (lambda != null) {
+                    lambda.getSymbol().getType();
+                }
+                if (assFun != null) {
+                    assFun.getSymbol().getType();
+                }
+                if (procedure != null) {
+                    procedure.getSymbol().getType();
+                }
+            }
+        }
+
+
 
     }
 
@@ -759,12 +842,12 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     }
 
     @Override
-    public void enterStatement(pl_pas_assParser.StatementContext ctx) {
+    public void enterStatement(StatementContext ctx) {
 
     }
 
     @Override
-    public void exitStatement(pl_pas_assParser.StatementContext ctx) {
+    public void exitStatement(StatementContext ctx) {
 
     }
 
@@ -1115,7 +1198,6 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitForStatement(pl_pas_assParser.ForStatementContext ctx) {
-
 
 
     }

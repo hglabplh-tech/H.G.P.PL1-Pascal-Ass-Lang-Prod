@@ -5,12 +5,12 @@
   <artifactId>H.G.P.PL1-Pascal-Ass-Lang</artifactId>
   <packaging>pom</packaging>
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>20</maven.compiler.source>
+        <maven.compiler.target>20</maven.compiler.target>
     </properties>
     <version>1.0.0-SNAPSHOT</version>
   <name>H.G.P.PL1-Pascal-Ass-Lang</name>
-  <description>H.G.P.PL1-Pascal-Ass-Lang</description>
+  <description>The H.G.P. PL/1 - Pascal - Ass - Functional Language</description>
   <licenses>
     <license>
       <name>Eclipse Public License</name>
@@ -22,6 +22,7 @@
   </scm>
   <modules>
     <module>PL_ASS_Common</module>
+    <module>PL_ASS_Bootstrap</module>
     <module>PL_ASS_Compiler</module>
     <module>PL_ASS_Runtime</module>
   </modules>

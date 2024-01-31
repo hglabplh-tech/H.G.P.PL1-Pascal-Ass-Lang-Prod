@@ -1,4 +1,4 @@
-package hgp.lang.genCompile;
+package hgp.lang.genCompile.langblocks;
 
 public class BlockClassBase {
 
