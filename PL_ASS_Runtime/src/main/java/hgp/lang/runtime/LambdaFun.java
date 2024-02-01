@@ -11,7 +11,7 @@ import static bytecinit.InitByteC.getClassPool;
 import static bytecode.addon.MethodsInvoker.funInvoke;
 
 public class LambdaFun implements ILambdaFun {
-
+// TODO: add environment feature
     private Object result;
     private final List<CtClass> paramTypes;
     private final List<Object> paramValues;

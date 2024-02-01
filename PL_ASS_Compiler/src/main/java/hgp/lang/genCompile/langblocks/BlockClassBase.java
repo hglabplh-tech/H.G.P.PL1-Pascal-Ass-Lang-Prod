@@ -1,13 +1,17 @@
 package hgp.lang.genCompile.langblocks;
 
-public class BlockClassBase {
+import org.antlr.v4.runtime.Token;
 
+public class BlockClassBase extends
+Statement{
 
+    public BlockClassBase(Token token, boolean openBlock) {
+        super(token);
+        this.openBlock = openBlock;
+    }
 
     private boolean openBlock = true;
-    public BlockClassBase() {
 
-    }
 
     public boolean isOpenBlock() {
         return openBlock;

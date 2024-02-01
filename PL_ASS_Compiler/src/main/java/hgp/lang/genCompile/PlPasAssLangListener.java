@@ -3,6 +3,7 @@ package hgp.lang.genCompile;
 
 import clojure.lang.Symbol;
 import hgp.lang.genCompile.langblocks.BeginBlock;
+import hgp.lang.genCompile.langblocks.Terminals;
 import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
 import hgp.lang.gparser.pl_pas_assParser;
@@ -36,14 +37,14 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterTheblocks(pl_pas_assParser.TheblocksContext ctx) {
-        BeginBlock begin = new BeginBlock();
+
         List<StatementContext> statements =
                 ctx.block().compoundStatement().statements().statement();
         for (StatementContext stmt : statements) {
             stmt.unlabelledStatement().simpleStatement();
         }
-        Symbol key = Symbol.create("beginBlock");
-        this.collector.addBlockClass(key, begin);
+
+
 
     }
 
@@ -653,7 +654,61 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitVariableDeclaration(pl_pas_assParser.VariableDeclarationContext ctx) {
+        TerminalNode colon = ctx.COLON();
+        if (colon != null) {
+            Token colonTok = colon.getSymbol();
+            System.out.println("colon Token: " + colonTok.getType() + " " +
+            colonTok.getLine() + " " +
+            colonTok.getText() + "\n");
+        }
+        IdentifierListContext idListCtx = ctx.identifierList();
+        if (idListCtx != null) {
+            List<IdentifierContext> idList = idListCtx.identifier();
+            for (IdentifierContext id :idList) {
+                if (id.IDENT() != null) {
+                    Token idTok = id.IDENT().getSymbol();
+                    if (idTok != null) {
+                        System.out.println("ID Token: " + idTok.getType() + " " +
+                                idTok.getLine() + " " +
+                                idTok.getText() + "\n");
+                    }
+                }
+            }
+        }
+        Type_Context typeCtx = ctx.type_();
+        if (typeCtx != null) {
+            PointerTypeContext pTypeCtx = typeCtx.pointerType();
+            if (pTypeCtx != null) {
+                TypeIdentifierContext typeIdCtx = pTypeCtx.typeIdentifier();
+                TerminalNode real = typeIdCtx.REAL();
+                TerminalNode string = typeIdCtx.STRING();
+                TerminalNode bool = typeIdCtx.BOOLEAN();
+                TerminalNode intVal = typeIdCtx.INTEGER();
+                if (real != null) {
+                        Token realTok = real.getSymbol();
+                    System.out.println("Real Token: " + realTok.getType() + " "
+                            + realTok.getLine() + " " + realTok.getText() + "\n");
+                }
+                if (string != null) {
+                    Token strTok = string.getSymbol();
+                    System.out.println("String Token: " + strTok.getType() + " "
+                            + strTok.getLine() + " " + strTok.getText() + "\n");
+                }
+                if (bool != null) {
+                    Token boolTok = string.getSymbol();
+                    System.out.println("Integer Token: " + boolTok.getType() + " "
+                            + boolTok.getLine() + " " + boolTok.getText() + "\n");
 
+                }
+
+                if (intVal != null) {
+                    Token intTok = string.getSymbol();
+                    System.out.println("Integer Token: " + intTok.getType() + " "
+                            + intTok.getLine() + " " + intTok.getText() + "\n");
+                }
+
+            }
+        }
     }
 
     @Override
@@ -884,22 +939,116 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterAssignmentStatement(pl_pas_assParser.AssignmentStatementContext ctx) {
+            ctx.ASSIGN().getSymbol().getText();
+        ctx.ASSIGN().getSymbol().getType();
+        ctx.ASSIGN().getSymbol().getLine();
+        ExpressionContext expr = ctx.expression();
+        if (expr != null) {
+            List<SimpleExpressionContext> simpleList = expr.simpleExpression();
+            if (simpleList != null) {
+                for (SimpleExpressionContext simpleCtx : simpleList) {
+                    AdditiveoperatorContext add = simpleCtx.additiveoperator();
+                    simpleCtx.simpleExpression();
+                    if (simpleList != null) {
+                        for (SimpleExpressionContext simpleCtx2 : simpleList) {
+                            AdditiveoperatorContext add2 = simpleCtx.additiveoperator();
+                            simpleCtx2.simpleExpression();
+                        }
+                }
+            }
+        }
+            List<ExpressionContext> exprList = expr.expression();
+            if (exprList != null) {
+                for (ExpressionContext expressionCtx : exprList) {
+                    expressionCtx.simpleExpression();
+                    if (simpleList != null) {
+                        for (SimpleExpressionContext simpleCtx2 : simpleList) {
+                            List<ExpressionContext> expr2 = expressionCtx.expression();
+                            expressionCtx.simpleExpression();
+                        }
+                    }
+            }
 
-    }
+
+
+
+    }}}
 
     @Override
     public void exitAssignmentStatement(pl_pas_assParser.AssignmentStatementContext ctx) {
-
+        ctx.ASSIGN().getSymbol().getText();
+        ctx.ASSIGN().getSymbol().getType();
+        ctx.ASSIGN().getSymbol().getLine();
     }
 
     @Override
     public void enterVariable(pl_pas_assParser.VariableContext ctx) {
+        workOnVarContext(ctx);
+    }
 
+    private static void workOnVarContext(VariableContext ctx) {
+        List<TerminalNode> lambda = ctx.LAMBDA();
+        TerminalNode atNode = ctx.AT();
+        List<TerminalNode> comma = ctx.COMMA();
+        List<TerminalNode> dot = ctx.DOT();
+        List<TerminalNode> lBrack = ctx.LBRACK();
+        List<TerminalNode> rBrack = ctx.RBRACK();
+        List<TerminalNode> lBrack2 = ctx.LBRACK2();
+        List<TerminalNode> rBrack2 = ctx.RBRACK2();
+        List<TerminalNode> pointer = ctx.POINTER();
+
+        if (lambda != null) {
+            for (TerminalNode terNode : lambda) {
+                Integer type = terNode.getSymbol().getType();
+                System.out.println("Lambda Terminal Node List Element type: " + type);
+            }
+        } else if (atNode != null) {
+            Integer type = atNode.getSymbol().getType();
+            System.out.println("At Terminal Node type: " + type);
+        } else if (comma != null) {
+            for (TerminalNode terNode : comma) {
+                Integer type = terNode.getSymbol().getType();
+                System.out.println("Comma Terminal Node List Element type: " + type);
+            }
+        } else if (dot != null) {
+            for (TerminalNode terNode : dot) {
+                Integer type = terNode.getSymbol().getType();
+                System.out.println("Dot Terminal Node List Element type: " + type);
+            }
+        } else if (lBrack != null) {
+            for (TerminalNode terNode : lBrack) {
+                Integer type = terNode.getSymbol().getType();
+                System.out.println("LeftBracket Terminal Node List Element type: " + type);
+            }
+        }
+        else if (rBrack != null) {
+            for (TerminalNode terNode : rBrack) {
+                Integer type = terNode.getSymbol().getType();
+                System.out.println("RightBracket Terminal Node List Element type: " + type);
+            }
+        }
+        else if (lBrack2 != null) {
+            for (TerminalNode terNode : lBrack2) {
+                Integer type = terNode.getSymbol().getType();
+                System.out.println("LeftBracket2 Terminal Node List Element type: " + type);
+            }
+        }
+        else if (rBrack2 != null) {
+            for (TerminalNode terNode : rBrack2) {
+                Integer type = terNode.getSymbol().getType();
+                System.out.println("RightBracket2 Terminal Node List Element type: " + type);
+            }
+        } else if (pointer != null) {
+            for (TerminalNode terNode : pointer) {
+                Integer type = terNode.getSymbol().getType();
+                System.out.println("Pointer Terminal Node List Element type: " + type);
+            }
+        }
     }
 
     @Override
     public void exitVariable(pl_pas_assParser.VariableContext ctx) {
-
+        workOnVarContext(ctx);
     }
 
     @Override
@@ -1276,7 +1425,13 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     @Override
     public void visitTerminal(TerminalNode terminalNode) {
 
+        Token tok = terminalNode.getSymbol();
+        Terminals terminal = new Terminals(tok, tok.getText(), tok.getType(), tok.getLine()
+        );
+        Symbol sym = Symbol.create("terminal");
+        collector.addBlockClass(sym, terminal);
     }
+
 
     @Override
     public void visitErrorNode(ErrorNode errorNode) {

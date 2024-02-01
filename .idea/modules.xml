@@ -3,6 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/H.G.P.PL1-Pascal-Ass-Lang.iml" filepath="$PROJECT_DIR$/H.G.P.PL1-Pascal-Ass-Lang.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PL_ASS_Bootstrap.iml" filepath="$PROJECT_DIR$/PL_ASS_Bootstrap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PL_ASS_Common/PL_ASS_Common.iml" filepath="$PROJECT_DIR$/PL_ASS_Common/PL_ASS_Common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PL_ASS_Compiler/PL_ASS_Compiler.iml" filepath="$PROJECT_DIR$/PL_ASS_Compiler/PL_ASS_Compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PL_ASS_Runtime.iml" filepath="$PROJECT_DIR$/PL_ASS_Runtime.iml" />
     </modules>
   </component>
 </project>

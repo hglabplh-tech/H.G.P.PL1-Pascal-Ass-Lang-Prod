@@ -5,6 +5,7 @@ import clojure.lang.IFn;
 import clojure.lang.ISeq;
 import clojure.lang.Symbol;
 import hgp.lang.genCompile.langblocks.BlockClassBase;
+import hgp.lang.genCompile.langblocks.Statement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,20 +19,20 @@ public class CummulationThread extends Thread implements Runnable {
 
         public Object invoke(Object o) {
             Symbol key = (Symbol)o;
-            Map<Symbol, BlockClassBase> result =
-                    ((Map<Symbol, BlockClassBase>)classesPool
+            Map<Symbol, Statement> result =
+                    ((Map<Symbol, Statement>)classesPool
                             .deref());
-            BlockClassBase foundBlock = result.get(key);
-            foundBlock.setOpenBlockClosed();
+            Statement foundBlock = result.get(key);
+            ((BlockClassBase)foundBlock).setOpenBlockClosed();
             result.put(key, foundBlock);
             return result;
         }
 
         public Object invoke(Object o, Object o1) {
             Symbol key = (Symbol)o;
-            BlockClassBase entry = (BlockClassBase)o1;
-            Map<Symbol, BlockClassBase> result =
-                    ((Map<Symbol, BlockClassBase>)classesPool
+            Statement entry = (Statement)o1;
+            Map<Symbol, Statement> result =
+                    ((Map<Symbol, Statement>)classesPool
                             .deref());
             result.put(key,entry);
             return result;
@@ -126,7 +127,7 @@ public class CummulationThread extends Thread implements Runnable {
         }
     };
 
-    private Atom classesPool = new Atom( new HashMap<Symbol, BlockClassBase>());
+    private Atom classesPool = new Atom( new HashMap<Symbol, Statement>());
 
     public void run() {
         while(true) {
@@ -138,7 +139,7 @@ public class CummulationThread extends Thread implements Runnable {
         }
     }
 
-    public synchronized void addBlockClass (Symbol newKey, BlockClassBase newEntry) {
+    public synchronized void addBlockClass (Symbol newKey, Statement newEntry) {
         // clone HashMap set value
         this.classesPool.swap(this.funToSwap, newKey, newEntry);
     }
@@ -148,17 +149,17 @@ public class CummulationThread extends Thread implements Runnable {
         this.classesPool.swap(this.funToSwap, key);
     }
 
-    public synchronized BlockClassBase getBlockEntry (Symbol key) {
+    public synchronized Statement getBlockEntry (Symbol key) {
 
-        Map<Symbol, BlockClassBase> result =
-                ((Map<Symbol, BlockClassBase>)classesPool
+        Map<Symbol, Statement> result =
+                ((Map<Symbol, Statement>)classesPool
                         .deref());
         return result.get(key);
     }
 
-    public synchronized Map<Symbol, BlockClassBase> getBlockMap () {
-        Map<Symbol, BlockClassBase> result =
-                ((Map<Symbol, BlockClassBase>)classesPool
+    public synchronized Map<Symbol,Statement> getBlockMap () {
+        Map<Symbol, Statement> result =
+                ((Map<Symbol, Statement>)classesPool
                         .deref());
         return result;
     }

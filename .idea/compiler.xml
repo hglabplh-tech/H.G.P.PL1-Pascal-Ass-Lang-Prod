@@ -19,7 +19,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="H.G.P.PL1-Pascal-Ass-Lang" />
+        <module name="PL_ASS_Runtime" />
+        <module name="PL_ASS_Common" />
+        <module name="PL_ASS_Compiler" />
+        <module name="PL_ASS_Bootstrap" />
       </profile>
     </annotationProcessing>
   </component>
