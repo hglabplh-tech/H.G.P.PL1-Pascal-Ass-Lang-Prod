@@ -139,7 +139,7 @@ public class CummulationThread extends Thread implements Runnable {
         }
     }
 
-    public synchronized void addBlockClass (Symbol newKey, Statement newEntry) {
+    public synchronized void addStatement(Symbol newKey, Statement newEntry) {
         // clone HashMap set value
         this.classesPool.swap(this.funToSwap, newKey, newEntry);
     }
@@ -149,7 +149,7 @@ public class CummulationThread extends Thread implements Runnable {
         this.classesPool.swap(this.funToSwap, key);
     }
 
-    public synchronized Statement getBlockEntry (Symbol key) {
+    public synchronized Statement getStatementEntry(Symbol key) {
 
         Map<Symbol, Statement> result =
                 ((Map<Symbol, Statement>)classesPool
@@ -157,7 +157,7 @@ public class CummulationThread extends Thread implements Runnable {
         return result.get(key);
     }
 
-    public synchronized Map<Symbol,Statement> getBlockMap () {
+    public synchronized Map<Symbol,Statement> getStatementMap() {
         Map<Symbol, Statement> result =
                 ((Map<Symbol, Statement>)classesPool
                         .deref());

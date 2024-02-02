@@ -2,7 +2,6 @@ package hgp.lang.genCompile;
 
 
 import clojure.lang.Symbol;
-import hgp.lang.genCompile.langblocks.BeginBlock;
 import hgp.lang.genCompile.langblocks.Terminals;
 import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
@@ -959,20 +958,24 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         }
             List<ExpressionContext> exprList = expr.expression();
             if (exprList != null) {
-                for (ExpressionContext expressionCtx : exprList) {
-                    expressionCtx.simpleExpression();
-                    if (simpleList != null) {
-                        for (SimpleExpressionContext simpleCtx2 : simpleList) {
-                            List<ExpressionContext> expr2 = expressionCtx.expression();
-                            expressionCtx.simpleExpression();
-                        }
-                    }
+                recurExpression(exprList, simpleList);
+
+
+            }}}
+
+    private static void recurExpression(List<ExpressionContext> exprList,
+                                        List<SimpleExpressionContext> simpleList) {
+        for (ExpressionContext expressionCtx : exprList) {
+            List<ExpressionContext> thisExpressions = expressionCtx.expression();
+            if  (thisExpressions != null) {
+                for (ExpressionContext expr:thisExpressions) {
+                    System.err.println("expr: " + expr.toString());
+                }
+                recurExpression(thisExpressions, simpleList);
             }
+    }
+    }
 
-
-
-
-    }}}
 
     @Override
     public void exitAssignmentStatement(pl_pas_assParser.AssignmentStatementContext ctx) {
@@ -1429,7 +1432,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         Terminals terminal = new Terminals(tok, tok.getText(), tok.getType(), tok.getLine()
         );
         Symbol sym = Symbol.create("terminal");
-        collector.addBlockClass(sym, terminal);
+        collector.addStatement(sym, terminal);
     }
 
 

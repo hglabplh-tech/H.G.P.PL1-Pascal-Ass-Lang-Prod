@@ -620,8 +620,33 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
 
     @Override
     public T visitChildren(RuleNode ruleNode) {
-        return (T)super.visitChildren(ruleNode);
+        T result = this.defaultResultPub();
+        int n = ruleNode.getChildCount();
 
+        for(int i = 0; i < n && this.shouldVisitNextChild(ruleNode, result); ++i) {
+            ParseTree c = ruleNode.getChild(i);
+            T childResult = (T) c.accept(this);
+            result = this.aggregateResultPub(result, childResult);
+            if (c instanceof RuleNode) {
+                result = visitChildren((RuleNode) c);
+            }
+
+        }
+
+        return result;
+
+    }
+
+    protected T defaultResultPub() {
+        return null;
+    }
+
+    protected T aggregateResultPub(T aggregate, T nextResult) {
+        return nextResult;
+    }
+
+    protected boolean shouldVisitNextChildPub(RuleNode node, T currentResult) {
+        return true;
     }
 
     @Override
