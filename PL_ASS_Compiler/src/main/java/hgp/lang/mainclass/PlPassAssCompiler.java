@@ -4,6 +4,7 @@ package hgp.lang.mainclass;
 import hgp.lang.genCompile.CummulationThread;
 import hgp.lang.genCompile.PlPasAssLangListener;
 import hgp.lang.genCompile.PlPasAssLangVisitor;
+import hgp.lang.genCompile.PrivateVisitContext;
 import hgp.lang.gparser.pl_pas_assLexer;
 import hgp.lang.gparser.pl_pas_assParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -47,7 +48,7 @@ public class PlPassAssCompiler {
             CummulationThread collector = new CummulationThread();
             ExecutorService service = Executors.newFixedThreadPool(2);
             service.submit(collector);
-            PlPasAssLangVisitor visitor = new PlPasAssLangVisitor();
+            PlPasAssLangVisitor<PrivateVisitContext> visitor = new PlPasAssLangVisitor<>();
             Object o = visitor.visit(tree);
             visitor.visitChildren((RuleNode)tree
             );

@@ -1,9 +1,12 @@
 package hgp.lang.genCompile;
 
 
+import genbytecj.generator.model.metamodel.expressions.constants.Constant;
 import hgp.lang.gparser.pl_pas_assBaseVisitor;
 import hgp.lang.gparser.pl_pas_assParser;
+import hgp.lang.gparser.pl_pas_assParser.*;
 import hgp.lang.gparser.pl_pas_assVisitor;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -38,7 +41,7 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
     }
 
     @Override
-    public T visitIdentifier(pl_pas_assParser.IdentifierContext ctx) {
+    public T visitIdentifier(IdentifierContext ctx) {
         return null;
     }
 
@@ -95,61 +98,139 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
 
     @Override
     public T visitUsesUnitsPart(pl_pas_assParser.UsesUnitsPartContext ctx) {
+        TerminalNode uses = ctx.USES();
+        if (uses != null) {
+            return (T)genPVCFromToken(uses.getSymbol());
+        }
         return null;
+    }
+
+    public PrivateVisitContext genPVCFromToken(Token theToken) {
+        //type
+        Integer type = theToken.getType();
+        // name
+        String text = theToken.getText();
+        //location
+        Integer sourceLin = theToken.getLine();
+        Integer sourceCol = theToken.getCharPositionInLine();
+        return new PrivateVisitContext(theToken, type, text, sourceLin, sourceCol);
     }
 
     @Override
     public T visitLabelDeclarationPart(pl_pas_assParser.LabelDeclarationPartContext ctx) {
-        return null;
+        TerminalNode label = ctx.LABEL();
+        PrivateVisitContext pVCTX = null;
+        if (label != null) {
+            pVCTX = genPVCFromToken(label.getSymbol());
+        }
+        return (T)pVCTX;
     }
 
     @Override
-    public T visitLabel(pl_pas_assParser.LabelContext ctx) {
-        return null;
+    public T visitLabel(LabelContext ctx) {
+        UnsignedIntegerContext intCtx = ctx.unsignedInteger();
+        PrivateVisitContext pVCTX = null;
+        if (intCtx != null) {
+            TerminalNode theNode = intCtx.NUM_INT();
+            if (theNode != null) {
+                Token nodeToken = theNode.getSymbol();
+                pVCTX = genPVCFromToken(nodeToken);
+            }
+        }
+        return (T)pVCTX;
     }
 
     @Override
     public T visitConstantDefinitionPart(pl_pas_assParser.ConstantDefinitionPartContext ctx) {
-        return null;
+        PrivateVisitContext pVCTX = null; // look for tat EQUAL element
+        TerminalNode theNode = ctx.CONST();
+        if (theNode != null) {
+            if (theNode != null) {
+                Token nodeToken = theNode.getSymbol();
+                pVCTX = genPVCFromToken(nodeToken);
+            }
+            if (pVCTX != null) {
+                List <ConstantDefinitionContext> cDContext =
+                        ctx.constantDefinition();
+                for (ConstantDefinitionContext context : cDContext) {
+                    if (context.constant() != null) {
+                        ConstantContext constContext =
+                                context.constant();
+                        IdentifierContext idContext =
+                                constContext.identifier();
+                        if (idContext != null) {
+                            TerminalNode idNode = idContext.IDENT();
+                            pVCTX.getBuilder().addToTerminalNodes(idNode);
+                        }
+                        ConstantChrContext chrCtx = constContext.constantChr();
+                        if (chrCtx != null) {
+                            TerminalNode chrNode = chrCtx.CHR();
+                            UnsignedIntegerContext uintContext =
+                                    chrCtx.unsignedInteger();
+                            TerminalNode uintTermNode = uintContext.NUM_INT();
+                            pVCTX.getBuilder().addToTerminalNodes(uintTermNode);
+                        }
+                    }
+                }
+            }
+         }
+
+        return (T)pVCTX;
     }
 
     @Override
-    public T visitConstantDefinition(pl_pas_assParser.ConstantDefinitionContext ctx) {
+    public T visitConstantDefinition(ConstantDefinitionContext ctx) {
+
         return null;
     }
 
     @Override
     public T visitConstantChr(pl_pas_assParser.ConstantChrContext ctx) {
-        return null;
+        return (T)genPVCFromToken(ctx.CHR().getSymbol());
     }
 
     @Override
-    public T visitConstant(pl_pas_assParser.ConstantContext ctx) {
+    public T visitConstant(ConstantContext ctx) {
+        ConstantChrContext chrCtx = ctx.constantChr();
+        if (chrCtx != null) {
+            return (T)genPVCFromToken(chrCtx.CHR().getSymbol());
+        }
         return null;
     }
 
     @Override
     public T visitUnsignedNumber(pl_pas_assParser.UnsignedNumberContext ctx) {
-        return null;
+        return (T)genPVCFromToken(ctx.unsignedInteger().NUM_INT().getSymbol());
+
     }
 
     @Override
-    public T visitUnsignedInteger(pl_pas_assParser.UnsignedIntegerContext ctx) {
-        return null;
+    public T visitUnsignedInteger(UnsignedIntegerContext ctx) {
+        return (T)genPVCFromToken(ctx.NUM_INT().getSymbol());
     }
 
     @Override
     public T visitUnsignedReal(pl_pas_assParser.UnsignedRealContext ctx) {
-        return null;
+        return (T)genPVCFromToken(ctx.NUM_REAL().getSymbol());
     }
 
     @Override
     public T visitSign(pl_pas_assParser.SignContext ctx) {
-        return null;
+        if (ctx.PLUS() != null) {
+            return (T)genPVCFromToken(ctx.PLUS().getSymbol());
+        } else if (ctx.MINUS() != null) {
+            return (T)genPVCFromToken(ctx.MINUS().getSymbol());
+        }
+       return null;
     }
 
     @Override
     public T visitBool_(pl_pas_assParser.Bool_Context ctx) {
+        if (ctx.TRUE() != null) {
+            return (T)genPVCFromToken(ctx.TRUE().getSymbol());
+        } else if (ctx.FALSE() != null) {
+            return (T)genPVCFromToken(ctx.FALSE().getSymbol());
+        }
         return null;
     }
 
@@ -160,6 +241,16 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
 
     @Override
     public T visitTypeDefinitionPart(pl_pas_assParser.TypeDefinitionPartContext ctx) {
+        List<TypeDefinitionContext> ctxTypeDef = ctx.typeDefinition();
+        if (ctxTypeDef != null ) {
+            for (TypeDefinitionContext  defCtx : ctxTypeDef) {
+                PointerTypeContext ptrCtx = defCtx.type_().pointerType();
+                SimpleTypeContext simpleCtx = defCtx.type_().simpleType();
+                StructuredTypeContext structType = defCtx.type_().structuredType();
+
+            }
+
+        }
         return null;
     }
 
@@ -170,11 +261,26 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
 
     @Override
     public T visitTypeDefinition(pl_pas_assParser.TypeDefinitionContext ctx) {
+        PointerTypeContext ptrCtx = ctx.type_().pointerType();
+        SimpleTypeContext simpleCtx = ctx.type_().simpleType();
+        StructuredTypeContext structType = ctx.type_().structuredType();
+
         return null;
     }
 
     @Override
     public T visitFunctionType(pl_pas_assParser.FunctionTypeContext ctx) {
+        Token funToken = ctx.FUNCTION().getSymbol();
+        List<FormalParameterSectionContext> formalList =
+                ctx.formalParameterList().formalParameterSection();
+        for (FormalParameterSectionContext sectCtx: formalList) {
+            TerminalNode funNode = sectCtx.FUNCTION();
+            TerminalNode assNode = sectCtx.ASSFUN();
+            TerminalNode varNode = sectCtx.VAR();
+            TerminalNode lambdaNode = sectCtx.LAMBDA();
+            TerminalNode procNode  = sectCtx.PROCEDURE();
+
+        }
         return null;
     }
 
@@ -628,7 +734,7 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
             T childResult = (T) c.accept(this);
             result = this.aggregateResultPub(result, childResult);
             if (c instanceof RuleNode) {
-                result = visitChildren((RuleNode) c);
+               // result = visitChildren((RuleNode) c);
             }
 
         }
