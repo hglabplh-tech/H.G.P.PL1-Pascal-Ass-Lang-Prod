@@ -27,7 +27,7 @@ public class NumericExpression {
         return new Builder();
     }
 
-    public  class ComplexExpression {
+    public  static class ComplexExpression {
         private List<SimpleExpression> simpleExpressions = new ArrayList<>();
 
         private  SimpleExpression simpleExpression;
@@ -54,30 +54,35 @@ public class NumericExpression {
             return new Builder(parent);
         }
 
-        public class Builder {
+        public static class Builder {
             private NumericExpression.Builder parent;
+            private ComplexExpression instance = new ComplexExpression();
             public Builder (NumericExpression.Builder parent) {
                 this.parent = parent;
             }
 
             public Builder setSimpleExpressions(List<SimpleExpression> simpleExprs) {
-                simpleExpressions = simpleExprs;
+                this.instance.simpleExpressions = simpleExprs;
                 return this;
             }
 
             public Builder addSimpleExpression(SimpleExpression expression) {
-                simpleExpressions.add(expression);
+                this.instance.simpleExpressions.add(expression);
                 return this;
             }
 
             public Builder setSimpleExpression(SimpleExpression simpleExpr) {
-                simpleExpression = simpleExpr;
+                this.instance.simpleExpression = simpleExpr;
                 return this;
             }
 
             public Builder setRecurComplex(ComplexExpression expression) {
-                recurExpression = expression;
+                this.instance.recurExpression = expression;
                 return this;
+            }
+
+            ComplexExpression buildit () {
+                return this.instance;
             }
 
 
@@ -87,12 +92,14 @@ public class NumericExpression {
         }
     }
 
-    public  class SimpleExpression {
+    public  static class SimpleExpression {
 
         private CommandCode opCode;
         private DataTypeId resultType;
         private Number firstVal;
         private Number secondVal;
+
+
 
         public SimpleExpression () {
         }
@@ -124,27 +131,33 @@ public class NumericExpression {
             return new Builder(parent);
         }
 
-        public class Builder {
+        public static class Builder {
             private NumericExpression.Builder parent;
+
+            private SimpleExpression instance = new SimpleExpression();
             public Builder (NumericExpression.Builder parent) {
                 this.parent = parent;
             }
 
             public Builder setOpcode (CommandCode operation) {
-                opCode = operation;
+                this.instance.opCode = operation;
                 return this;
             }
             public Builder setDataTypeId (DataTypeId resType) {
-                resultType = resType;
+                this.instance.resultType = resType;
                 return this;
             }
             public Builder setFirstValue(Number value) {
-                firstVal = value;
+                this.instance.firstVal = value;
                 return this;
             }
             public Builder setSecondValue(Number value) {
-                secondVal = value;
+                this.instance.secondVal = value;
                 return this;
+            }
+
+            SimpleExpression buildit () {
+                return this.instance;
             }
 
             public  NumericExpression.Builder end() {
@@ -153,24 +166,31 @@ public class NumericExpression {
         }
     }
 
-    public class Builder {
+    public static class Builder {
 
 
+        private ComplexExpression.Builder complex;
 
+        private SimpleExpression.Builder simple;
 
         public Builder() {
 
         }
 
         public ComplexExpression.Builder buildComplex() {
-            return new ComplexExpression().newBuilder(this);
+            this.complex = new ComplexExpression.Builder(this);
+            return this.complex;
         }
 
         public  SimpleExpression.Builder buildSimple() {
-            return new SimpleExpression().newBuilder(this);
+            this.simple = new SimpleExpression.Builder(this);
+            return this.simple;
         }
 
-        public NumericExpression build() { // implement this
+        public NumericExpression build() {
+            NumericExpression thisInst = new NumericExpression();
+            thisInst.simpleExpression = simple.buildit();
+            thisInst.expression = complex.buildit();// implement this
             return null;
         }
 
