@@ -27,28 +27,32 @@ public class NumericExpression {
         return new Builder();
     }
 
-    public  static class ComplexExpression {
-        private List<SimpleExpression> simpleExpressions = new ArrayList<>();
+    public  static class ComplexExpression extends Expression {
+        private List<Expression> simpleExpressions = new ArrayList<>();
+
+        private CommandCode listConnectCmd = CommandCode.ADD;
 
         private  SimpleExpression simpleExpression;
 
-        private ComplexExpression recurExpression;
+
 
         public ComplexExpression() {
 
         }
 
-        public List<SimpleExpression> getSimpleExpressions() {
+        public List<Expression> getSimpleExpressions() {
             return simpleExpressions;
+        }
+
+        public CommandCode getListConnectCmd() {
+            return listConnectCmd;
         }
 
         public SimpleExpression getSimpleExpression() {
             return simpleExpression;
         }
 
-        public ComplexExpression getRecurExpression() {
-            return recurExpression;
-        }
+
 
         public Builder newBuilder(NumericExpression.Builder parent) {
             return new Builder(parent);
@@ -61,12 +65,17 @@ public class NumericExpression {
                 this.parent = parent;
             }
 
-            public Builder setSimpleExpressions(List<SimpleExpression> simpleExprs) {
+            public Builder setSimpleExpressions(List<Expression> simpleExprs) {
                 this.instance.simpleExpressions = simpleExprs;
                 return this;
             }
 
-            public Builder addSimpleExpression(SimpleExpression expression) {
+            public Builder setListConnectCmd(CommandCode op) {
+                this.instance.listConnectCmd = op;
+                return this;
+            }
+
+            public Builder addSimpleExpression(Expression expression) {
                 this.instance.simpleExpressions.add(expression);
                 return this;
             }
@@ -76,10 +85,7 @@ public class NumericExpression {
                 return this;
             }
 
-            public Builder setRecurComplex(ComplexExpression expression) {
-                this.instance.recurExpression = expression;
-                return this;
-            }
+
 
             ComplexExpression buildit () {
                 return this.instance;
@@ -92,7 +98,7 @@ public class NumericExpression {
         }
     }
 
-    public  static class SimpleExpression {
+    public  static class SimpleExpression extends Expression{
 
         private CommandCode opCode;
         private DataTypeId resultType;
