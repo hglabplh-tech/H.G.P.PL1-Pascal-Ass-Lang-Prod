@@ -30,23 +30,21 @@ public class NumericExpression {
     public  static class ComplexExpression extends Expression {
         private List<Expression> simpleExpressions = new ArrayList<>();
 
-        private CommandCode listConnectCmd = CommandCode.ADD;
+
 
         private  SimpleExpression simpleExpression;
 
 
 
-        public ComplexExpression() {
-
+        public ComplexExpression(CommandCode connectOp, DataTypeId typeId) {
+            super(connectOp, typeId);
         }
 
         public List<Expression> getSimpleExpressions() {
             return simpleExpressions;
         }
 
-        public CommandCode getListConnectCmd() {
-            return listConnectCmd;
-        }
+
 
         public SimpleExpression getSimpleExpression() {
             return simpleExpression;
@@ -54,24 +52,22 @@ public class NumericExpression {
 
 
 
-        public Builder newBuilder(NumericExpression.Builder parent) {
-            return new Builder(parent);
+        public Builder newBuilder(NumericExpression.Builder parent,
+                                  CommandCode connectOp, DataTypeId typeId) {
+            return new Builder(parent, connectOp, typeId);
         }
 
         public static class Builder {
             private NumericExpression.Builder parent;
-            private ComplexExpression instance = new ComplexExpression();
-            public Builder (NumericExpression.Builder parent) {
+            private ComplexExpression instance;
+            public Builder (NumericExpression.Builder parent,
+                            CommandCode connectOp, DataTypeId typeId) {
+                instance = new ComplexExpression(connectOp, typeId);
                 this.parent = parent;
             }
 
             public Builder setSimpleExpressions(List<Expression> simpleExprs) {
                 this.instance.simpleExpressions = simpleExprs;
-                return this;
-            }
-
-            public Builder setListConnectCmd(CommandCode op) {
-                this.instance.listConnectCmd = op;
                 return this;
             }
 
@@ -107,10 +103,12 @@ public class NumericExpression {
 
 
 
-        public SimpleExpression () {
+        public SimpleExpression (CommandCode connectOp, DataTypeId typeId) {
+            super(connectOp, typeId);
         }
-        public SimpleExpression (CommandCode opCode, DataTypeId resultType,
+        public SimpleExpression (CommandCode connectOp, CommandCode opCode, DataTypeId resultType,
                                  Number firstVal, Number secondVal) {
+            this(connectOp, resultType);
             this.opCode = opCode;
             this.resultType = resultType;
             this.firstVal = firstVal;
@@ -133,15 +131,17 @@ public class NumericExpression {
             return secondVal;
         }
 
-        public Builder newBuilder(NumericExpression.Builder parent) {
-            return new Builder(parent);
+        public Builder newBuilder(NumericExpression.Builder parent,
+                                  CommandCode connectOp, DataTypeId typeId) {
+            return new Builder(parent, connectOp, typeId);
         }
 
         public static class Builder {
             private NumericExpression.Builder parent;
 
-            private SimpleExpression instance = new SimpleExpression();
-            public Builder (NumericExpression.Builder parent) {
+            private SimpleExpression instance;
+            public Builder (NumericExpression.Builder parent, CommandCode connectOp, DataTypeId typeId) {
+                instance = new SimpleExpression(connectOp, typeId);
                 this.parent = parent;
             }
 
@@ -183,13 +183,13 @@ public class NumericExpression {
 
         }
 
-        public ComplexExpression.Builder buildComplex() {
-            this.complex = new ComplexExpression.Builder(this);
+        public ComplexExpression.Builder buildComplex(CommandCode connectOp, DataTypeId typeId) {
+            this.complex = new ComplexExpression.Builder(this, connectOp, typeId);
             return this.complex;
         }
 
-        public  SimpleExpression.Builder buildSimple() {
-            this.simple = new SimpleExpression.Builder(this);
+        public  SimpleExpression.Builder buildSimple(CommandCode connectOp, DataTypeId typeId) {
+            this.simple = new SimpleExpression.Builder(this, connectOp, typeId);
             return this.simple;
         }
 

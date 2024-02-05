@@ -45,20 +45,17 @@ public class NumericLogic {
         NumericExpression.SimpleExpression simpleExpr = complex.getSimpleExpression();
         List<Expression> simpleExprList = complex.getSimpleExpressions();
         if  (simpleExprList != null && !simpleExprList.isEmpty()) {
-            StackToken.CommandCode connectCode = complex.getListConnectCmd();
-            Result prevResult = new Result(DataTypeId.INTEGER, 0); // change this
+            Result prevResult = new Result(simpleExprList.get(0).getTypeId(), 0); // change this
             for (Expression theExpr : simpleExprList) {
                 if (theExpr instanceof NumericExpression.SimpleExpression) {
                     NumericExpression.SimpleExpression expression =
                             (NumericExpression.SimpleExpression)theExpr;
                     result = this.computeSimpleExpression(expression);
-                    // this has to be changed
-                    NumericExpression.SimpleExpression connectIt =
-                            new NumericExpression.SimpleExpression(connectCode,
-                                    expression.getResultType(),
-                                    prevResult.getTheValue(),
-                                    result.getTheValue());
-                    result = this.computeSimpleExpression(connectIt);
+                    NumericExpression.SimpleExpression connectExpr =
+                            new NumericExpression.SimpleExpression(expression.getTheConnectOperation(),
+                                    expression.getOpCode(), expression.getResultType(),
+                                    prevResult.getTheValue(), result.getTheValue());
+                    result = this.computeSimpleExpression(connectExpr);
                     prevResult = result;
                 } else if (theExpr instanceof NumericExpression.ComplexExpression) {
                     NumericExpression.ComplexExpression expression =
