@@ -1,7 +1,7 @@
 package hgp.lang.genCompile;
 
 
-import genbytecj.generator.model.metamodel.expressions.constants.Constant;
+import hgp.lang.genCompile.langblocks.SubExpression;
 import hgp.lang.gparser.pl_pas_assBaseVisitor;
 import hgp.lang.gparser.pl_pas_assParser;
 import hgp.lang.gparser.pl_pas_assParser.*;
@@ -16,21 +16,16 @@ import java.util.List;
 
 public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
         implements pl_pas_assVisitor {
+   PrivateVisitContext context = new PrivateVisitContext();
     @Override
     public T visitProgram(pl_pas_assParser.ProgramContext ctx) {
-        ctx.programHeading().identifier().IDENT().getSymbol();
-        return null;
+
+        return visit(ctx.theblocks());
     }
 
     @Override
     public T visitTheblocks(pl_pas_assParser.TheblocksContext ctx) {
-        List<pl_pas_assParser.StatementContext> statements =
-                ctx.block().compoundStatement().statements().statement();
-        for (pl_pas_assParser.StatementContext stmt : statements) {
-            stmt.unlabelledStatement().simpleStatement();
-        }
-
-        visitChildren((RuleNode) ctx.getChild(0));
+        visitChildren(ctx.block());
         return null;
     }
 
@@ -47,13 +42,8 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
 
     @Override
     public T visitBlock(pl_pas_assParser.BlockContext ctx) {
-        List<pl_pas_assParser.StatementContext> statements =
-                ctx.compoundStatement().statements().statement();
-        for (pl_pas_assParser.StatementContext stmt : statements) {
-            ctx.accept(this);
-            stmt.unlabelledStatement().simpleStatement();
-        }
-        return null;
+
+        return visit(ctx.compoundStatement());
     }
 
     @Override
@@ -526,11 +516,13 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
 
     @Override
     public T visitVariable(pl_pas_assParser.VariableContext ctx) {
+
         return null;
     }
 
     @Override
     public T visitExpression(pl_pas_assParser.ExpressionContext ctx) {
+        ctx.expression().get(0).simpleExpression(0).term();
         return null;
     }
 
@@ -541,36 +533,58 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
 
     @Override
     public T visitSimpleExpression(pl_pas_assParser.SimpleExpressionContext ctx) {
+        ctx.simpleExpression();
         return null;
     }
 
     @Override
     public T visitAdditiveoperator(pl_pas_assParser.AdditiveoperatorContext ctx) {
+        ctx.MINUS();
+        ctx.PLUS();
         return null;
     }
 
     @Override
     public T visitTerm(pl_pas_assParser.TermContext ctx) {
+
         return null;
     }
 
     @Override
     public T visitMultiplicativeoperator(pl_pas_assParser.MultiplicativeoperatorContext ctx) {
+        ctx.SLASH();
+        ctx.STAR();
         return null;
     }
 
     @Override
     public T visitSignedFactor(pl_pas_assParser.SignedFactorContext ctx) {
+        ctx.PLUS();
+        ctx.MINUS();
+
         return null;
     }
 
     @Override
     public T visitFactor(pl_pas_assParser.FactorContext ctx) {
+        SubExpression expression = null;
+        TerminalNode lParen = ctx.factor().LPAREN();
+        TerminalNode rParen = ctx.factor().RPAREN();
+        ctx.factor().bool_();
+        ctx.factor().variable();
+        if (lParen != null) {
+            expression = new SubExpression(lParen.getSymbol());
+        } else if (rParen != null) {
+            expression = new SubExpression(rParen.getSymbol());
+        }
+
+
         return null;
     }
 
     @Override
     public T visitUnsignedConstant(pl_pas_assParser.UnsignedConstantContext ctx) {
+        ctx.unsignedNumber().unsignedInteger().NUM_INT();
         return null;
     }
 
@@ -636,12 +650,12 @@ public class PlPasAssLangVisitor<T> extends pl_pas_assBaseVisitor
 
     @Override
     public T visitCompoundStatement(pl_pas_assParser.CompoundStatementContext ctx) {
-        return null;
+        return visit(ctx.statements());
     }
 
     @Override
     public T visitStatements(pl_pas_assParser.StatementsContext ctx) {
-        return null;
+        return visit(ctx.statement().get(0));
     }
 
     @Override

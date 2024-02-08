@@ -9,24 +9,26 @@ import java.util.List;
 
 public class PrivateVisitContext<T> {
 
-    private final Token actToken;
+    private Token actToken;
 
-    private final Integer type;
+    private Integer type;
 
-    private final String textOfNode;
+    private String textOfNode;
 
-    private final Integer defLine;
+    private Integer defLine;
 
-    private final Integer defColumn;
+    private Integer defColumn;
 
-    private final Builder builder;
+    private Builder builder;
 
     private T theValue;
 
     private List<TerminalNode> tNodeList = new ArrayList<>();
 
 
+    public PrivateVisitContext() {
 
+    }
 
     public PrivateVisitContext(Token actToken, Integer type,
                                String textOfNode,
@@ -71,23 +73,22 @@ public class PrivateVisitContext<T> {
     public static class Builder<T> {
 
         private final PrivateVisitContext<T> instance;
+
         public Builder(PrivateVisitContext<T> instance) {
             this.instance = instance;
         }
 
-        public PrivateVisitContext<T> setValue (T theValue) {
+        public PrivateVisitContext<T> setValue(T theValue) {
             instance.theValue = theValue;
             return instance;
         }
 
-        public PrivateVisitContext<T> addToTerminalNodes (TerminalNode theNode) {
+        public PrivateVisitContext<T> addToTerminalNodes(TerminalNode theNode) {
             instance.tNodeList.add(theNode);
             return instance;
         }
 
     }
-
-
 
 
 }

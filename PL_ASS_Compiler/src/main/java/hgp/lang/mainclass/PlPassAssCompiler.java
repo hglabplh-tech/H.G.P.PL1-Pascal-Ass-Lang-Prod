@@ -1,34 +1,25 @@
 package hgp.lang.mainclass;
 
 
-import hgp.lang.genCompile.CummulationThread;
 import hgp.lang.genCompile.PlPasAssLangListener;
-import hgp.lang.genCompile.PlPasAssLangVisitor;
-import hgp.lang.genCompile.PrivateVisitContext;
+import hgp.lang.genCompile.expressions.Expression;
+import hgp.lang.genCompile.expressions.ShuntingYard;
 import hgp.lang.gparser.pl_pas_assLexer;
 import hgp.lang.gparser.pl_pas_assParser;
+import hgp.lang.runtime.calculationandtypes.NumericLogic;
+import hgp.lang.runtime.calculationandtypes.RuntimeExpression;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.antlr.v4.runtime.tree.RuleNode;
 
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.concurrent.*;
+import java.util.List;
 
 public class PlPassAssCompiler {
-
-    public final CummulationThread collector;
-    public PlPassAssCompiler(CummulationThread collector) {
-        this.collector = collector;
-        init();
-    }
-
-    private void init() {
-
-    }
 
 
     public static void main(String[] params) {
@@ -45,17 +36,21 @@ public class PlPassAssCompiler {
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             pl_pas_assParser parser = new pl_pas_assParser(tokens);
             ParseTree tree = parser.program();
-            CummulationThread collector = new CummulationThread();
-            ExecutorService service = Executors.newFixedThreadPool(2);
-            service.submit(collector);
-            PlPasAssLangVisitor<PrivateVisitContext> visitor = new PlPasAssLangVisitor<>();
-            Object o = visitor.visit(tree);
-            visitor.visitChildren((RuleNode)tree
-            );
-            //ParseTreeWalker walker = ParseTreeWalker.DEFAULT;
-            //walker.walk(new PlPasAssLangListener(collector), tree);
-            PlPassAssCompiler compiler = new PlPassAssCompiler(collector);
-            service.shutdown();
+
+
+           // PlPasAssLangVisitor<PrivateVisitContext> visitor = new PlPasAssLangVisitor<>();
+           // Object o = visitor.visit(tree);
+            //visitor.visitChildren((RuleNode)tree );
+            ParseTreeWalker walker = ParseTreeWalker.DEFAULT;
+            PlPasAssLangListener langListener = new PlPasAssLangListener();
+            walker.walk(langListener, tree);
+            Expression result = langListener.getExpression();
+            System.out.println(result);
+            ShuntingYard theParser = new ShuntingYard(result);
+            List<RuntimeExpression> parseResult = theParser.parse();
+            NumericLogic numLogic = new NumericLogic();
+            NumericLogic.Result res = numLogic.calculateTerm(parseResult);
+            System.out.println(res);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }

@@ -1,11 +1,10 @@
 package hgp.lang.runtime.calculationandtypes;
 
-import clojure.lang.Obj;
 import hgp.lang.runtime.calculationandtypes.StackToken.DataTypeId;
 
 import java.util.*;
 
-import static hgp.lang.runtime.calculationandtypes.NumericExpression.*;
+
 import static hgp.lang.runtime.calculationandtypes.StackToken.*;
 
 /**
@@ -17,16 +16,20 @@ public class NumericLogic {
 
     private final StackMachine machine;
 
-    private final Stack<PreCalc> stack = new Stack<>();
+
+    private final Queue<Object> parmQueue = new ArrayDeque<>();
 
 
-    private static Map<CommandCode, Integer> operatorPrecedence = new HashMap<>();
+    private static Map<Token, Integer> operatorPrecedence = new HashMap<>();
+
+
+
     static {
-        operatorPrecedence.put(CommandCode.MUL, 10);
-        operatorPrecedence.put(CommandCode.DIVIDE, 9);
-        operatorPrecedence.put(CommandCode.MODULO, 7);
-        operatorPrecedence.put(CommandCode.ADD, 5);
-        operatorPrecedence.put(CommandCode.SUBTRACT, 3);
+        operatorPrecedence.put(Token.MUL_TOKEN, 10);
+        operatorPrecedence.put(Token.DIVIDE_TOKEN, 9);
+        operatorPrecedence.put(Token.MODULO_TOKEN, 7);
+        operatorPrecedence.put(Token.ADD_TOKEN ,5);
+        operatorPrecedence.put(Token.SUBTRACT_TOKEN, 3);
         ;
 
     }
@@ -36,70 +39,56 @@ public class NumericLogic {
     }
 
 
-    public Result calculateTerm(NumericExpression expression) {
-        stack.clear();
-        ComplexExpression complex = expression.getExpression();
-        List<PreCalc> resultsList = new ArrayList<>();
-        Result theResult = null;
-        if (complex != null) {
-            resultsList.addAll(calculateComplexExpression(complex));
+    public Result calculateTerm(List<RuntimeExpression> expressions) {
+        this.parmQueue.clear();
+        for (RuntimeExpression expression : expressions) {
+            System.out.println(expression.getToken().getCode());
         }
-        return theResult;
+        return this.calculateByPrecedence(expressions);
     }
 
-    private PreCalc computeSimpleExpression(PreCalc                                          simple) {
-
+    private void computeExpression(Token token, DataTypeId type) {
+        ReadParams params = readParams(token, type);
         StackToken result = this.getMachine()
-                .pushToStackAndExecute(simple.getOpCode(), simple.getFirstValue(),
-                        simple.getSecondValue(), simple.getTypeId());
-        PreCalc theResult = new PreCalc(result.getOperation(), result.getType(),
-                null,result.getValue());
-        return theResult;
+                .pushToStackAndExecute(token.getCode(), params.firstValue(),
+                        params.secValue(), params.typeId());
+        parmQueue.add(result.getValue());
+
     }
 
-    private List<PreCalc> calculateComplexExpression(ComplexExpression complex) {
-        List<PreCalc> resList = new ArrayList<>();
-        SimpleExpression simpleExpr = complex.getSimpleExpression();
-        List<Expression> simpleExprList = complex.getSimpleExpressions();
-        if  (simpleExprList != null && !simpleExprList.isEmpty()) {
-            Result prevResult = new Result(simpleExprList.get(0).getTypeId(), 0); // change this
-            for (Expression theExpr : simpleExprList) {
-                if (theExpr instanceof SimpleExpression) {
-                  resList.addAll(calculateByPrecedence(simpleExprList));
-                } else if (theExpr instanceof ComplexExpression) {
-                    ComplexExpression expression =
-                            (ComplexExpression)theExpr;
-                        this.calculateComplexExpression(expression);
+    private ReadParams readParams(Token token, DataTypeId typeId) {
 
-                    // here also will be more logic
-                }
+        Number firstValue = (Number) parmQueue.remove();
+        Number secValue = (Number) parmQueue.remove();
 
-            }
-        }
-        if (simpleExpr != null) {
-            //result =  this.computeSimpleExpression(simpleExpr);
-        }
-        return resList;
+        ReadParams result = new ReadParams(typeId, firstValue, secValue);
+        return result;
     }
 
-    public List<PreCalc> calculateByPrecedence(List<Expression> expressionList) {
-        Expression  saveExpression = null;
-        List<PreCalc> resList = new ArrayList<>();
-        for (Expression theExpr : expressionList) {
-            PreCalc preCalc = new PreCalc(theExpr.getTheConnectOperation(),
-                    theExpr.getTypeId(), ((SimpleExpression)theExpr).getFirstVal(),
-                    ((SimpleExpression)theExpr).getSecondVal() );
-            if (saveExpression != null) {
-                if (operatorPrecedence.get(theExpr.getTheConnectOperation()) >
-                        operatorPrecedence.get(saveExpression.getTheConnectOperation())) {
-                    resList.add(this.computeSimpleExpression(preCalc));
-                } else {
-                    this.stack.push(preCalc);
-                }
+    private record ReadParams(DataTypeId typeId, Number firstValue, Number secValue) {
+    }
+
+
+    public Result calculateByPrecedence(List<RuntimeExpression> expressionList) {
+        DataTypeId type = DataTypeId.INTEGER;
+        Integer counter = 0;
+        for (RuntimeExpression theExpr : expressionList) {
+            if (counter == 0) {
+                type = (DataTypeId)theExpr.getValue();
+                counter++;
             }
-            saveExpression = theExpr;
+            Token token = theExpr.getToken();
+            if (token.getType().equals(TokenType.MATH_TOKEN)) {
+                computeExpression(token, type);
+            } else if (token.equals(Token.CONST_VALUE_TOKEN)) {
+                Number value = (Number)theExpr.getValue();
+                parmQueue.add(value);
+            }
+
+
         }
-        return resList;
+        Number theValue = (Number)parmQueue.remove();
+        return new Result(type, theValue);
     }
 
 
@@ -107,38 +96,6 @@ public class NumericLogic {
         return machine;
     }
 
-    public static class PreCalc {
-
-        private final CommandCode opCode;
-        private final DataTypeId typeId;
-        private final Number firstValue;
-
-        private final Number secondValue;
-
-        public PreCalc(CommandCode opCode, DataTypeId typeId,
-                       Number firstValue, Number secondValue) {
-            this.opCode = opCode;
-            this.typeId = typeId;
-            this.firstValue = firstValue;
-            this.secondValue = secondValue;
-        }
-
-        public CommandCode getOpCode() {
-            return opCode;
-        }
-
-        public DataTypeId getTypeId() {
-            return typeId;
-        }
-
-        public Number getFirstValue() {
-            return firstValue;
-        }
-
-        public Number getSecondValue() {
-            return secondValue;
-        }
-    }
 
     public static class Result {
         private final DataTypeId typeId;
@@ -155,6 +112,14 @@ public class NumericLogic {
 
         public Number getTheValue() {
             return theValue;
+        }
+
+        @Override
+        public String toString() {
+            return "Result{" +
+                    "typeId=" + typeId +
+                    ", theValue=" + theValue +
+                    '}';
         }
     }
 

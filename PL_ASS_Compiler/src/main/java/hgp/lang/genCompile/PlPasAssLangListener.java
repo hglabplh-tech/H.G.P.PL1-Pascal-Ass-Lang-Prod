@@ -2,6 +2,7 @@ package hgp.lang.genCompile;
 
 
 import clojure.lang.Symbol;
+import hgp.lang.genCompile.expressions.Expression;
 import hgp.lang.genCompile.langblocks.Terminals;
 import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
@@ -18,10 +19,16 @@ import java.util.List;
 public class PlPasAssLangListener extends pl_pas_assBaseListener
         implements pl_pas_assListener {
 
-    private final CummulationThread collector;
 
-    public PlPasAssLangListener(CummulationThread collector) {
-        this.collector = collector;
+
+    private Expression expression = new Expression();
+
+
+
+
+
+    public Expression getExpression() {
+        return expression;
     }
 
     @Override
@@ -244,22 +251,24 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterUnsignedInteger(pl_pas_assParser.UnsignedIntegerContext ctx) {
+        Token theToken = ctx.NUM_INT().getSymbol();
+        this.expression.getNodes().add(ctx.NUM_INT());
 
     }
 
     @Override
     public void exitUnsignedInteger(pl_pas_assParser.UnsignedIntegerContext ctx) {
-
+        Token theToken = ctx.NUM_INT().getSymbol();
     }
 
     @Override
     public void enterUnsignedReal(pl_pas_assParser.UnsignedRealContext ctx) {
-
+        Token theToken = ctx.NUM_REAL().getSymbol();
     }
 
     @Override
     public void exitUnsignedReal(pl_pas_assParser.UnsignedRealContext ctx) {
-
+        Token theToken = ctx.NUM_REAL().getSymbol();
     }
 
     @Override
@@ -1056,12 +1065,32 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterExpression(pl_pas_assParser.ExpressionContext ctx) {
+        List<ExpressionContext> exprContext = ctx.expression();
+        for (ExpressionContext exprElement: exprContext) {
+            List<SimpleExpressionContext> sexprContextList =
+                    exprElement.simpleExpression();
+            for(SimpleExpressionContext sexprContext: sexprContextList) {
+                AdditiveoperatorContext addCtx = sexprContext.additiveoperator();
+                if (addCtx != null) {
+                    TerminalNode plus = addCtx.PLUS();
+                    TerminalNode minus = addCtx.MINUS();
 
+                }
+                TermContext termCtx = sexprContext.term();
+                if (termCtx != null) {
+                    termCtx.signedFactor();
+                }
+
+                if (exprElement.expression() != null) {
+                    //enterExpression(exprElement.expression());
+                }
+            }
+        }
     }
 
     @Override
     public void exitExpression(pl_pas_assParser.ExpressionContext ctx) {
-
+        ctx.expression();
     }
 
     @Override
@@ -1076,21 +1105,31 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterSimpleExpression(SimpleExpressionContext ctx) {
-
+        ctx.simpleExpression();
     }
 
     @Override
     public void exitSimpleExpression(SimpleExpressionContext ctx) {
-
+        ctx.simpleExpression();
     }
 
     @Override
     public void enterAdditiveoperator(pl_pas_assParser.AdditiveoperatorContext ctx) {
+        TerminalNode minus = ctx.MINUS();
+        TerminalNode plus = ctx.PLUS();
+        if (minus != null) {
+           this.expression.getNodes().add(minus);
 
+        }
+        if (plus != null) {
+            this.expression.getNodes().add(plus);
+        }
     }
 
     @Override
     public void exitAdditiveoperator(pl_pas_assParser.AdditiveoperatorContext ctx) {
+        TerminalNode minus = ctx.MINUS();
+        TerminalNode plus = ctx.PLUS();
 
     }
 
@@ -1106,11 +1145,20 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterMultiplicativeoperator(pl_pas_assParser.MultiplicativeoperatorContext ctx) {
-
+        TerminalNode slash = ctx.SLASH();
+        TerminalNode star = ctx.STAR();
+        if (slash != null) {
+            this.expression.getNodes().add(slash);
+        }
+        if (star != null) {
+            this.expression.getNodes().add(star);
+        }
     }
 
     @Override
     public void exitMultiplicativeoperator(pl_pas_assParser.MultiplicativeoperatorContext ctx) {
+        TerminalNode slash = ctx.SLASH();
+        TerminalNode star = ctx.STAR();
 
     }
 
@@ -1126,21 +1174,38 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterFactor(pl_pas_assParser.FactorContext ctx) {
+        TerminalNode lParen = ctx.LPAREN();
+        TerminalNode rParen = ctx.RPAREN();
+        ctx.bool_();
+        ctx.variable();
+        if (lParen != null) {
+            this.expression.getNodes().add(lParen);
+        }
+
 
     }
 
     @Override
     public void exitFactor(pl_pas_assParser.FactorContext ctx) {
+        TerminalNode lParen = ctx.LPAREN();
+        TerminalNode rParen = ctx.RPAREN();
+        ctx.bool_();
+        ctx.variable();
+
+        if (rParen != null) {
+            this.expression.getNodes().add(rParen);
+        }
 
     }
 
     @Override
     public void enterUnsignedConstant(pl_pas_assParser.UnsignedConstantContext ctx) {
-
+        ctx.unsignedNumber().unsignedInteger().NUM_INT();
     }
 
     @Override
     public void exitUnsignedConstant(pl_pas_assParser.UnsignedConstantContext ctx) {
+        UnsignedIntegerContext intCtx = ctx.unsignedNumber().unsignedInteger();
 
     }
 
@@ -1432,7 +1497,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         Terminals terminal = new Terminals(tok, tok.getText(), tok.getType(), tok.getLine()
         );
         Symbol sym = Symbol.create("terminal");
-        collector.addStatement(sym, terminal);
+
     }
 
 

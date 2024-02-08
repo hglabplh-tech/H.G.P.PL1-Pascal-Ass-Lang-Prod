@@ -105,7 +105,7 @@ public class StackMachine {
                         case ADD:
                             return add(firstInt, secondInt);
                         case DIVIDE:
-                            return add(firstInt, secondInt);
+                            return divide(firstInt, secondInt);
                         case SUBTRACT:
                             return sub(firstInt, secondInt);
                     }
@@ -119,7 +119,7 @@ public class StackMachine {
                         case ADD:
                             return add(firstLong, secondLong);
                         case DIVIDE:
-                            return add(firstLong, secondLong);
+                            return divide(firstLong, secondLong);
                         case SUBTRACT:
                             return sub(firstLong, secondLong);
                     }
@@ -133,7 +133,7 @@ public class StackMachine {
                         case ADD:
                             return add(firstFloat, secondFloat);
                         case DIVIDE:
-                            return add(firstFloat, secondFloat);
+                            return divide(firstFloat, secondFloat);
                         case SUBTRACT:
                             return sub(firstFloat, secondFloat);
                     }
@@ -147,7 +147,7 @@ public class StackMachine {
                         case ADD:
                             return add(firstDouble, secondDouble);
                         case DIVIDE:
-                            return add(firstDouble, secondDouble);
+                            return divide(firstDouble, secondDouble);
                         case SUBTRACT:
                             return sub(firstDouble, secondDouble);
                     }
