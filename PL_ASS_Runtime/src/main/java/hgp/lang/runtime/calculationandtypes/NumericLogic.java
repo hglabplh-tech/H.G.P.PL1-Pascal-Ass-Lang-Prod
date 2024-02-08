@@ -19,6 +19,8 @@ public class NumericLogic {
 
     private final Queue<Object> parmQueue = new ArrayDeque<>();
 
+    private final Queue<Object> resultQueue = new ArrayDeque<>();
+
 
     private static Map<Token, Integer> operatorPrecedence = new HashMap<>();
 
@@ -52,7 +54,7 @@ public class NumericLogic {
         StackToken result = this.getMachine()
                 .pushToStackAndExecute(token.getCode(), params.firstValue(),
                         params.secValue(), params.typeId());
-        parmQueue.add(result.getValue());
+        resultQueue.add(result.getValue());
 
     }
 
@@ -72,6 +74,7 @@ public class NumericLogic {
     public Result calculateByPrecedence(List<RuntimeExpression> expressionList) {
         DataTypeId type = DataTypeId.INTEGER;
         Integer counter = 0;
+        Queue<Object> tempQueue = new ArrayDeque<>();
         for (RuntimeExpression theExpr : expressionList) {
             if (counter == 0) {
                 type = (DataTypeId)theExpr.getValue();
@@ -79,15 +82,27 @@ public class NumericLogic {
             }
             Token token = theExpr.getToken();
             if (token.getType().equals(TokenType.MATH_TOKEN)) {
+                if (tempQueue.size() >= token.getParamCount()) {
+                    parmQueue.add(tempQueue.remove());
+                    parmQueue.add(tempQueue.remove());
+                } else {
+                    if (tempQueue.isEmpty()) {
+                        parmQueue.add(resultQueue.remove());
+                        parmQueue.add(resultQueue.remove());
+                    } else if (tempQueue.size() == 1) {
+                        parmQueue.add(resultQueue.remove());
+                        parmQueue.add(tempQueue.remove());
+                    }
+                }
                 computeExpression(token, type);
             } else if (token.equals(Token.CONST_VALUE_TOKEN)) {
                 Number value = (Number)theExpr.getValue();
-                parmQueue.add(value);
+                tempQueue.add(value);
             }
 
 
         }
-        Number theValue = (Number)parmQueue.remove();
+        Number theValue = (Number)resultQueue.remove();
         return new Result(type, theValue);
     }
 

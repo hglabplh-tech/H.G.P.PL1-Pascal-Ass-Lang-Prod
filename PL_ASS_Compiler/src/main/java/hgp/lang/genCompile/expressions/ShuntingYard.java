@@ -82,7 +82,14 @@ public class ShuntingYard {
             return new RuntimeExpression(internTok, null);
         } else if (type.equals(StackToken.TokenType.VALUE_TOKEN)) {
             Number theValue = null;
-            theValue = Integer.valueOf(outToken.getText());
+            switch (outToken.getType()) {
+                case NUM_INT -> theValue = Integer.valueOf(outToken.getText());
+                case NUM_REAL -> theValue = Double.valueOf(outToken.getText());
+
+
+            }
+
+
             return new RuntimeExpression(internTok, theValue);// value ???
         } else {
             return new RuntimeExpression(internTok, null);
