@@ -14,6 +14,8 @@ public enum TokenMap {
     MUL_TOK(STAR, Token.MUL_TOKEN, TokenType.MATH_TOKEN, OperatorAssociativity.LEFT),
     DIV_TOK(SLASH, Token.DIVIDE_TOKEN, TokenType.MATH_TOKEN, OperatorAssociativity.LEFT),
     NUM_INT_TOK(NUM_INT, Token.CONST_VALUE_TOKEN, TokenType.VALUE_TOKEN, OperatorAssociativity.NOT_APPLICABLE),
+    VAR_TOK(VAR, Token.VAR_TOKEN, TokenType.VALUE_TOKEN, OperatorAssociativity.NOT_APPLICABLE),
+    IDENT_TOK(IDENT, Token.IDENT_TOKEN, TokenType.VALUE_TOKEN, OperatorAssociativity.NOT_APPLICABLE),
     LPAREN_TOK(LPAREN, Token.LPAREN_TOKEN, TokenType.SPECIAL_TOKEN, OperatorAssociativity.NOT_APPLICABLE),
     RPAREN_TOK(RPAREN, Token.RPAREN_TOKEN, TokenType.SPECIAL_TOKEN, OperatorAssociativity.NOT_APPLICABLE),
     NOP_TOK(-1, Token.TYPE_TOKEN, TokenType.SPECIAL_TOKEN, OperatorAssociativity.NOT_APPLICABLE)

@@ -1,9 +1,11 @@
 package hgp.lang.mainclass;
 
 
+import clojure.lang.Symbol;
 import hgp.lang.genCompile.PlPasAssLangListener;
 import hgp.lang.genCompile.expressions.Expression;
 import hgp.lang.genCompile.expressions.ShuntingYard;
+import hgp.lang.genCompile.expressions.VarDeclare;
 import hgp.lang.gparser.pl_pas_assLexer;
 import hgp.lang.gparser.pl_pas_assParser;
 import hgp.lang.runtime.calculationandtypes.NumericLogic;
@@ -18,6 +20,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.Map;
 
 public class PlPassAssCompiler {
 
@@ -45,6 +48,7 @@ public class PlPassAssCompiler {
             PlPasAssLangListener langListener = new PlPasAssLangListener();
             walker.walk(langListener, tree);
             Expression result = langListener.getExpression();
+            Map<String, VarDeclare> variables = langListener.getVariableDecl();
             System.out.println(result);
             ShuntingYard theParser = new ShuntingYard(result);
             List<RuntimeExpression> parseResult = theParser.parse();

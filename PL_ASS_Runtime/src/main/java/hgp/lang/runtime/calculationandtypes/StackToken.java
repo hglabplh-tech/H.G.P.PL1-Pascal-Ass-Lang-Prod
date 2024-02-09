@@ -61,6 +61,7 @@ public class StackToken
         TYPE,
         CONST_VALUE,
         VAR,
+        IDENT,
         LPAREN,
         RPAREN,
         SQRT
@@ -128,6 +129,10 @@ public class StackToken
         START_BLOCK_TOKEN(CommandCode.START_BLOCK, TokenType.SPECIAL_TOKEN, 0, OperatorAssociativity.NOT_APPLICABLE),
         END_BLOCK_TOKEN(CommandCode.END_BLOCK, TokenType.SPECIAL_TOKEN, 0, OperatorAssociativity.NOT_APPLICABLE),
         CONST_VALUE_TOKEN(CommandCode.CONST_VALUE, TokenType.VALUE_TOKEN, 1, OperatorAssociativity.NOT_APPLICABLE),
+        VAR_TOKEN(CommandCode.VAR, TokenType.VALUE_TOKEN, 1,
+                OperatorAssociativity.NOT_APPLICABLE),
+        IDENT_TOKEN(CommandCode.IDENT, TokenType.VALUE_TOKEN, 1,
+                OperatorAssociativity.NOT_APPLICABLE),
         TYPE_TOKEN(CommandCode.TYPE, TokenType.VALUE_TOKEN, 1, OperatorAssociativity.NOT_APPLICABLE),
 
         LPAREN_TOKEN(CommandCode.LPAREN, TokenType.SPECIAL_TOKEN, 0, OperatorAssociativity.NOT_APPLICABLE),

@@ -2,7 +2,9 @@ package hgp.lang.genCompile;
 
 
 import clojure.lang.Symbol;
+import hgp.lang.genCompile.expressions.Assignment;
 import hgp.lang.genCompile.expressions.Expression;
+import hgp.lang.genCompile.expressions.VarDeclare;
 import hgp.lang.genCompile.langblocks.Terminals;
 import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
@@ -14,21 +16,31 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PlPasAssLangListener extends pl_pas_assBaseListener
         implements pl_pas_assListener {
 
 
-
     private Expression expression = new Expression();
 
+    private List<Assignment> assignments = new ArrayList<>();
 
+    private Map<String, VarDeclare> variableDecl = new HashMap<>();
 
-
+    public List<Assignment> getAssignments() {
+        return assignments;
+    }
 
     public Expression getExpression() {
         return expression;
+    }
+
+    public Map<String, VarDeclare> getVariableDecl() {
+        return variableDecl;
     }
 
     @Override
@@ -51,7 +63,6 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         }
 
 
-
     }
 
     @Override
@@ -71,6 +82,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterIdentifier(pl_pas_assParser.IdentifierContext ctx) {
+        ctx.IDENT().getSymbol().getType();
 
     }
 
@@ -263,6 +275,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterUnsignedReal(pl_pas_assParser.UnsignedRealContext ctx) {
+
         Token theToken = ctx.NUM_REAL().getSymbol();
     }
 
@@ -636,13 +649,51 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     }
 
     @Override
-    public void enterVariableDeclarationPart(pl_pas_assParser.VariableDeclarationPartContext ctx) {
+    public void enterVariableDeclarationPart(
+            pl_pas_assParser.VariableDeclarationPartContext ctx) {
+        ctx.VAR().getSymbol().getType();
+        for (VariableDeclarationContext varDecl : ctx.variableDeclaration()) {
+            String idName = null;
+            for (IdentifierContext idContext :
+                    varDecl.identifierList().identifier()) {
+                Token idToken = idContext.IDENT().getSymbol();
+                if (idToken != null) {
+                    idName = idToken.getText();
+                }
+            }
+            SimpleTypeContext typeCtx = varDecl.type_().simpleType();
+            TypeIdentifierContext typeIdCtx = typeCtx.typeIdentifier();
+
+
+            TerminalNode intNode = typeIdCtx.INTEGER();
+            if (intNode != null) {
+                VarDeclare temp = new VarDeclare(idName, intNode);
+                this.variableDecl.put(temp.getName(), temp);
+            }
+
+            TerminalNode realNode = typeIdCtx.REAL();
+            if (realNode != null) {
+                VarDeclare temp = new VarDeclare(idName, realNode);
+                this.variableDecl.put(temp.getName(), temp);
+            }
+            TerminalNode charNode = typeIdCtx.CHAR();
+            if (charNode != null) {
+                VarDeclare temp = new VarDeclare(idName, charNode);
+                this.variableDecl.put(temp.getName(), temp);
+            }
+            TerminalNode stringNode = typeIdCtx.STRING();
+
+            if (stringNode != null) {
+                VarDeclare temp = new VarDeclare(idName, stringNode);
+                this.variableDecl.put(temp.getName(), temp);
+            }
+
+        }
 
     }
 
     @Override
     public void exitVariableDeclarationPart(pl_pas_assParser.VariableDeclarationPartContext ctx) {
-
     }
 
     @Override
@@ -657,22 +708,26 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterVariableDeclaration(pl_pas_assParser.VariableDeclarationContext ctx) {
-
+        varDeclaration(ctx);
     }
 
     @Override
     public void exitVariableDeclaration(pl_pas_assParser.VariableDeclarationContext ctx) {
+        varDeclaration(ctx);
+    }
+
+    private static void varDeclaration(VariableDeclarationContext ctx) {
         TerminalNode colon = ctx.COLON();
         if (colon != null) {
             Token colonTok = colon.getSymbol();
             System.out.println("colon Token: " + colonTok.getType() + " " +
-            colonTok.getLine() + " " +
-            colonTok.getText() + "\n");
+                    colonTok.getLine() + " " +
+                    colonTok.getText() + "\n");
         }
         IdentifierListContext idListCtx = ctx.identifierList();
         if (idListCtx != null) {
             List<IdentifierContext> idList = idListCtx.identifier();
-            for (IdentifierContext id :idList) {
+            for (IdentifierContext id : idList) {
                 if (id.IDENT() != null) {
                     Token idTok = id.IDENT().getSymbol();
                     if (idTok != null) {
@@ -693,7 +748,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                 TerminalNode bool = typeIdCtx.BOOLEAN();
                 TerminalNode intVal = typeIdCtx.INTEGER();
                 if (real != null) {
-                        Token realTok = real.getSymbol();
+                    Token realTok = real.getSymbol();
                     System.out.println("Real Token: " + realTok.getType() + " "
                             + realTok.getLine() + " " + realTok.getText() + "\n");
                 }
@@ -947,42 +1002,38 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterAssignmentStatement(pl_pas_assParser.AssignmentStatementContext ctx) {
-            ctx.ASSIGN().getSymbol().getText();
-        ctx.ASSIGN().getSymbol().getType();
-        ctx.ASSIGN().getSymbol().getLine();
-        ExpressionContext expr = ctx.expression();
-        if (expr != null) {
-            List<SimpleExpressionContext> simpleList = expr.simpleExpression();
-            if (simpleList != null) {
-                for (SimpleExpressionContext simpleCtx : simpleList) {
-                    AdditiveoperatorContext add = simpleCtx.additiveoperator();
-                    simpleCtx.simpleExpression();
-                    if (simpleList != null) {
-                        for (SimpleExpressionContext simpleCtx2 : simpleList) {
-                            AdditiveoperatorContext add2 = simpleCtx.additiveoperator();
-                            simpleCtx2.simpleExpression();
-                        }
-                }
+        TerminalNode assign =
+                ctx.ASSIGN();
+        VariableContext varCtx = ctx.variable();
+        TerminalNode idNode = null;
+        if (varCtx != null) {
+            varCtx.identifier().get(0).IDENT();
+            for (IdentifierContext idContext :
+                    varCtx.identifier()) {
+                idNode = idContext.IDENT();
+                this.expression.getNodes().add(idNode);
+            }
+            if (idNode != null) {
+                Assignment assignment = new Assignment(idNode);
+                this.assignments.add(assignment);
+                this.expression = assignment.getSource();
             }
         }
-            List<ExpressionContext> exprList = expr.expression();
-            if (exprList != null) {
-                recurExpression(exprList, simpleList);
 
 
-            }}}
+    }
 
     private static void recurExpression(List<ExpressionContext> exprList,
                                         List<SimpleExpressionContext> simpleList) {
         for (ExpressionContext expressionCtx : exprList) {
             List<ExpressionContext> thisExpressions = expressionCtx.expression();
-            if  (thisExpressions != null) {
-                for (ExpressionContext expr:thisExpressions) {
+            if (thisExpressions != null) {
+                for (ExpressionContext expr : thisExpressions) {
                     System.err.println("expr: " + expr.toString());
                 }
                 recurExpression(thisExpressions, simpleList);
             }
-    }
+        }
     }
 
 
@@ -995,7 +1046,8 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterVariable(pl_pas_assParser.VariableContext ctx) {
-        workOnVarContext(ctx);
+
+        // workOnVarContext(ctx);
     }
 
     private static void workOnVarContext(VariableContext ctx) {
@@ -1032,20 +1084,17 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                 Integer type = terNode.getSymbol().getType();
                 System.out.println("LeftBracket Terminal Node List Element type: " + type);
             }
-        }
-        else if (rBrack != null) {
+        } else if (rBrack != null) {
             for (TerminalNode terNode : rBrack) {
                 Integer type = terNode.getSymbol().getType();
                 System.out.println("RightBracket Terminal Node List Element type: " + type);
             }
-        }
-        else if (lBrack2 != null) {
+        } else if (lBrack2 != null) {
             for (TerminalNode terNode : lBrack2) {
                 Integer type = terNode.getSymbol().getType();
                 System.out.println("LeftBracket2 Terminal Node List Element type: " + type);
             }
-        }
-        else if (rBrack2 != null) {
+        } else if (rBrack2 != null) {
             for (TerminalNode terNode : rBrack2) {
                 Integer type = terNode.getSymbol().getType();
                 System.out.println("RightBracket2 Terminal Node List Element type: " + type);
@@ -1066,10 +1115,10 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     @Override
     public void enterExpression(pl_pas_assParser.ExpressionContext ctx) {
         List<ExpressionContext> exprContext = ctx.expression();
-        for (ExpressionContext exprElement: exprContext) {
+        for (ExpressionContext exprElement : exprContext) {
             List<SimpleExpressionContext> sexprContextList =
                     exprElement.simpleExpression();
-            for(SimpleExpressionContext sexprContext: sexprContextList) {
+            for (SimpleExpressionContext sexprContext : sexprContextList) {
                 AdditiveoperatorContext addCtx = sexprContext.additiveoperator();
                 if (addCtx != null) {
                     TerminalNode plus = addCtx.PLUS();
@@ -1118,7 +1167,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         TerminalNode minus = ctx.MINUS();
         TerminalNode plus = ctx.PLUS();
         if (minus != null) {
-           this.expression.getNodes().add(minus);
+            this.expression.getNodes().add(minus);
 
         }
         if (plus != null) {
@@ -1177,9 +1226,18 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         TerminalNode lParen = ctx.LPAREN();
         TerminalNode rParen = ctx.RPAREN();
         ctx.bool_();
-        ctx.variable();
+        VariableContext varCtx = ctx.variable();
         if (lParen != null) {
             this.expression.getNodes().add(lParen);
+        }
+        TerminalNode idNode;
+        if (varCtx != null) {
+            varCtx.identifier().get(0).IDENT();
+            for (IdentifierContext idContext :
+                    varCtx.identifier()) {
+                idNode = idContext.IDENT();
+                this.expression.getNodes().add(idNode);
+            }
         }
 
 
@@ -1530,15 +1588,15 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                         theType = typeCtx.BOOLEAN();
                     } else if (typeCtx.REAL() != null) {
                         theType = typeCtx.REAL();
-                    }  else if (typeCtx.INTEGER() != null) {
+                    } else if (typeCtx.INTEGER() != null) {
                         theType = typeCtx.INTEGER();
-                    }  else if (typeCtx.STRING() != null) {
+                    } else if (typeCtx.STRING() != null) {
                         theType = typeCtx.STRING();
                     }
                     if (theType != null) {
                         Token symbol = theType.getSymbol();
                         Integer idType = symbol.getType();
-                        String idText =  symbol.getText();
+                        String idText = symbol.getText();
                         Integer lineNo = symbol.getLine();
                         System.err.println("First ID type: " + idType
                                 + " / the id Text: " + idText
@@ -1546,8 +1604,8 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                     }
                     if (typeIdCtx != null) {
                         TerminalNode typeIdIdent = typeIdCtx.IDENT();
-                    Integer theIdType = typeIdIdent.getSymbol().getType();
-                    System.err.println("Type of Return? :" + theIdType);
+                        Integer theIdType = typeIdIdent.getSymbol().getType();
+                        System.err.println("Type of Return? :" + theIdType);
                     }
 
                 }

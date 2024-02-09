@@ -9,11 +9,11 @@ public class RibCageEnv {
     private static RibCageEnv instance = null;
 
 
-    private static final List<Map<Integer, Address>> env = new ArrayList<>();
+    private static final Stack<Map<Integer, Address>> env = new Stack<>();
 
-    private final List<Map<Integer, Address>> stackEnv;
+    private final Stack<Map<Integer, Address>> stackEnv;
 
-    public RibCageEnv(List<Map<Integer, Address>> newEnv) {
+    public RibCageEnv(Stack<Map<Integer, Address>> newEnv) {
         stackEnv = newEnv;
     }
     public void pushStackEnv(Map<Integer, Address> newSub) {
@@ -35,7 +35,7 @@ public class RibCageEnv {
 
     public Optional<Map<Integer, Address>> giveCheckedEnv() {
         return (!stackEnv.isEmpty()) ?
-                Optional.of(stackEnv.get(0)) :
+                Optional.of(stackEnv.peek()) :
                 Optional.empty();
     }
 

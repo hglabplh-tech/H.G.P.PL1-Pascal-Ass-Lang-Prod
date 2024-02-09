@@ -33,6 +33,10 @@ public class ShuntingYard {
         for (Token token : tokens) {
             if (token.getType() == NUM_INT) {
                 output.add(reallyAddToOutput(token));
+            } else if (token.getType() == IDENT) {
+                    output.add(reallyAddToOutput(token));
+            } else if (token.getType() == VAR) {
+                output.add(reallyAddToOutput(token));
            /* } else if (token instanceof FunctionToken) {
                 Call call = new Call((FunctionToken) token);
                 callStack.push(call);
@@ -81,16 +85,18 @@ public class ShuntingYard {
         if (type.equals(StackToken.TokenType.MATH_TOKEN)) {
             return new RuntimeExpression(internTok, null);
         } else if (type.equals(StackToken.TokenType.VALUE_TOKEN)) {
-            Number theValue = null;
+            Object theValue = null;
             switch (outToken.getType()) {
                 case NUM_INT -> theValue = Integer.valueOf(outToken.getText());
                 case NUM_REAL -> theValue = Double.valueOf(outToken.getText());
+                case VAR -> theValue = outToken.getText();
+                case IDENT -> theValue = outToken.getText();
 
 
             }
 
 
-            return new RuntimeExpression(internTok, theValue);// value ???
+             return new RuntimeExpression(internTok, theValue);// value ???
         } else {
             return new RuntimeExpression(internTok, null);
         }
