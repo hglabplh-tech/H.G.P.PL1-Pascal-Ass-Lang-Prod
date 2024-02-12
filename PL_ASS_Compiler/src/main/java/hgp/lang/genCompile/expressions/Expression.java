@@ -1,5 +1,8 @@
 package hgp.lang.genCompile.expressions;
 
+import hgp.lang.executor.Binding;
+import hgp.lang.executor.CodeStep;
+import hgp.lang.executor.StepRunner;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -7,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Expression  {
+public class Expression extends CodeStep implements StepRunner {
 
     private List<TerminalNode> nodes = new ArrayList<>();
-    public Expression() {
-
+    public Expression(Binding parent) {
+        super(parent);
     }
 
     public List<TerminalNode> getNodes() {
@@ -45,5 +48,15 @@ public class Expression  {
                 "buffer content= " +
                 theBuffer.toString() +
                 '}';
+    }
+
+    @Override
+    public Binding getBinding() {
+        return getParentBinding();
+    }
+
+    @Override
+    public CodeStep call() throws Exception {
+        return null;
     }
 }

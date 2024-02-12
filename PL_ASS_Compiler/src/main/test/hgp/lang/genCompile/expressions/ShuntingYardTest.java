@@ -1,5 +1,6 @@
 package hgp.lang.genCompile.expressions;
 
+import hgp.lang.executor.Program;
 import hgp.lang.gparser.pl_pas_assParser;
 import hgp.lang.runtime.calculationandtypes.NumericLogic;
 import hgp.lang.runtime.calculationandtypes.RuntimeExpression;
@@ -17,7 +18,8 @@ import java.util.List;
 public class ShuntingYardTest {
     @Test
     public void simpleTest() {
-        Expression expr = new Expression();
+        Program proc = new Program();
+        Expression expr = new Expression(proc.getBinding());
 
         List<TerminalNode> terminals =  expr.getNodes();
         Token tok = new CommonToken(pl_pas_assParser.NUM_INT, "3");
@@ -40,7 +42,8 @@ public class ShuntingYardTest {
 
     @Test
     public void complexTest () {
-        Expression expr = new Expression();
+        Program proc = new Program();
+        Expression expr = new Expression(proc.getBinding());
 
         List<TerminalNode> terminals =  expr.getNodes();
         Token tok = new CommonToken(pl_pas_assParser.LPAREN, null);

@@ -2,8 +2,11 @@ package hgp.lang.genCompile.expressions;
 
 import static hgp.lang.gparser.pl_pas_assParser.*;
 
+import hgp.lang.executor.Binding;
+import hgp.lang.executor.VariableReference;
 import hgp.lang.runtime.calculationandtypes.RuntimeExpression;
 import hgp.lang.runtime.calculationandtypes.StackToken;
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayDeque;
@@ -13,10 +16,13 @@ import java.util.List;
 
 public class ShuntingYard {
 
+    private final Binding theBinding;
+
     private final List<Token
             > tokenList;
 
     public ShuntingYard(Expression expression) {
+        this.theBinding = expression.getBinding();
         this.tokenList = expression.getTokenList();
         this.tokenList.stream().map(Token::getType).toList();
     }
@@ -34,9 +40,15 @@ public class ShuntingYard {
             if (token.getType() == NUM_INT) {
                 output.add(reallyAddToOutput(token));
             } else if (token.getType() == IDENT) {
-                    output.add(reallyAddToOutput(token));
+                VariableReference ref = theBinding.getFromPool(token.getText());
+                Token newToken = new CommonToken(ref.varType(), ref.value().toString());
+                output.add(reallyAddToOutput(newToken));
+
             } else if (token.getType() == VAR) {
-                output.add(reallyAddToOutput(token));
+                VariableReference ref = theBinding.getFromPool(token.getText());
+                Token newToken = new CommonToken(ref.varType(), ref.value().toString());
+                output.add(reallyAddToOutput(newToken));
+
            /* } else if (token instanceof FunctionToken) {
                 Call call = new Call((FunctionToken) token);
                 callStack.push(call);
@@ -84,7 +96,8 @@ public class ShuntingYard {
 
         if (type.equals(StackToken.TokenType.MATH_TOKEN)) {
             return new RuntimeExpression(internTok, null);
-        } else if (type.equals(StackToken.TokenType.VALUE_TOKEN)) {
+        } else if (type.equals(StackToken.TokenType.VALUE_TOKEN)
+        || type.equals(StackToken.TokenType.VAR_TOKEN)) {
             Object theValue = null;
             switch (outToken.getType()) {
                 case NUM_INT -> theValue = Integer.valueOf(outToken.getText());

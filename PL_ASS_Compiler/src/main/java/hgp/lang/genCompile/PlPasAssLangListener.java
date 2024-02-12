@@ -2,6 +2,8 @@ package hgp.lang.genCompile;
 
 
 import clojure.lang.Symbol;
+import hgp.lang.executor.Binding;
+import hgp.lang.executor.Program;
 import hgp.lang.genCompile.expressions.Assignment;
 import hgp.lang.genCompile.expressions.Expression;
 import hgp.lang.genCompile.expressions.VarDeclare;
@@ -16,23 +18,43 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PlPasAssLangListener extends pl_pas_assBaseListener
         implements pl_pas_assListener {
 
 
-    private Expression expression = new Expression();
+    private Stack<Binding> bindingStack  = new Stack<>();
+    private Binding actBinding;
+    private Program program = new Program();
+    private Expression expression = new Expression(program.getBinding());
 
-    private List<Assignment> assignments = new ArrayList<>();
+    private Assignment assignment = null;
 
     private Map<String, VarDeclare> variableDecl = new HashMap<>();
 
-    public List<Assignment> getAssignments() {
-        return assignments;
+
+    public PlPasAssLangListener() {
+        actBinding = program.getBinding();
+        pushBinding(actBinding);
+    }
+
+    public void pushBinding(Binding newBinding) {
+        bindingStack.push(actBinding());
+        actBinding = newBinding;
+    }
+
+    public Binding popBinding() {
+        actBinding = bindingStack.pop();
+        return actBinding();
+    }
+
+    public Binding actBinding() {
+        return actBinding;
+    }
+
+    public Assignment getAssignment() {
+        return assignment;
     }
 
     public Expression getExpression() {
@@ -713,11 +735,18 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitVariableDeclaration(pl_pas_assParser.VariableDeclarationContext ctx) {
-        varDeclaration(ctx);
+        List<VarDeclare> values = new ArrayList<>();
+        values.addAll(variableDecl.values());
+        for (VarDeclare var: values) {
+            VarDeclare temp = variableDecl.get(var.getName());
+            actBinding.addNewVarReference(var, "0");
+
+        }
     }
 
-    private static void varDeclaration(VariableDeclarationContext ctx) {
+    private  void varDeclaration(VariableDeclarationContext ctx) {
         TerminalNode colon = ctx.COLON();
+        String varName = null;
         if (colon != null) {
             Token colonTok = colon.getSymbol();
             System.out.println("colon Token: " + colonTok.getType() + " " +
@@ -734,6 +763,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                         System.out.println("ID Token: " + idTok.getType() + " " +
                                 idTok.getLine() + " " +
                                 idTok.getText() + "\n");
+                        varName = idTok.getText();
                     }
                 }
             }
@@ -747,29 +777,41 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                 TerminalNode string = typeIdCtx.STRING();
                 TerminalNode bool = typeIdCtx.BOOLEAN();
                 TerminalNode intVal = typeIdCtx.INTEGER();
+                TerminalNode charVal = typeIdCtx.CHAR();
+                TerminalNode resultType = null;
                 if (real != null) {
                     Token realTok = real.getSymbol();
                     System.out.println("Real Token: " + realTok.getType() + " "
                             + realTok.getLine() + " " + realTok.getText() + "\n");
+                    resultType = real;
                 }
                 if (string != null) {
                     Token strTok = string.getSymbol();
                     System.out.println("String Token: " + strTok.getType() + " "
                             + strTok.getLine() + " " + strTok.getText() + "\n");
+                    resultType = string;
                 }
                 if (bool != null) {
-                    Token boolTok = string.getSymbol();
+                    Token boolTok = bool.getSymbol();
                     System.out.println("Integer Token: " + boolTok.getType() + " "
                             + boolTok.getLine() + " " + boolTok.getText() + "\n");
-
+                    resultType = bool;
                 }
 
                 if (intVal != null) {
-                    Token intTok = string.getSymbol();
+                    Token intTok = intVal.getSymbol();
                     System.out.println("Integer Token: " + intTok.getType() + " "
                             + intTok.getLine() + " " + intTok.getText() + "\n");
+                    resultType = intVal;
                 }
-
+                if (charVal != null) {
+                    Token charTok = charVal.getSymbol();
+                    System.out.println("Integer Token: " + charTok.getType() + " "
+                            + charTok.getLine() + " " + charTok.getText() + "\n");
+                    resultType = charVal;
+                }
+                VarDeclare newVar = new VarDeclare(varName, resultType);
+                this.variableDecl.put(varName, newVar);
             }
         }
     }
@@ -1004,6 +1046,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     public void enterAssignmentStatement(pl_pas_assParser.AssignmentStatementContext ctx) {
         TerminalNode assign =
                 ctx.ASSIGN();
+
         VariableContext varCtx = ctx.variable();
         TerminalNode idNode = null;
         if (varCtx != null) {
@@ -1014,8 +1057,8 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                 this.expression.getNodes().add(idNode);
             }
             if (idNode != null) {
-                Assignment assignment = new Assignment(idNode);
-                this.assignments.add(assignment);
+                Assignment assignment = new Assignment(actBinding(), idNode);
+                this.assignment = assignment;
                 this.expression = assignment.getSource();
             }
         }
@@ -1039,9 +1082,14 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void exitAssignmentStatement(pl_pas_assParser.AssignmentStatementContext ctx) {
-        ctx.ASSIGN().getSymbol().getText();
-        ctx.ASSIGN().getSymbol().getType();
-        ctx.ASSIGN().getSymbol().getLine();
+        Assignment assignment = this.getAssignment();
+        if (assignment != null) {
+            try {
+                assignment.call();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
