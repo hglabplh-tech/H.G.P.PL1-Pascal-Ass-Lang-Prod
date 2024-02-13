@@ -8,10 +8,13 @@ import hgp.lang.genCompile.expressions.Assignment;
 import hgp.lang.genCompile.expressions.Expression;
 import hgp.lang.genCompile.expressions.VarDeclare;
 import hgp.lang.genCompile.langblocks.Terminals;
+import hgp.lang.genCompile.memory.ConstantPool;
 import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
 import hgp.lang.gparser.pl_pas_assParser;
 import hgp.lang.gparser.pl_pas_assParser.*;
+import hgp.lang.types.SubrangeType;
+import hgp.lang.types.TypeRegistry;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -20,11 +23,13 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.*;
 
+import static hgp.lang.genCompile.memory.ConstantPool.*;
+
 public class PlPasAssLangListener extends pl_pas_assBaseListener
         implements pl_pas_assListener {
 
 
-    private Stack<Binding> bindingStack  = new Stack<>();
+    private Stack<Binding> bindingStack = new Stack<>();
     private Binding actBinding;
     private Program program = new Program();
     private Expression expression = new Expression(program.getBinding());
@@ -245,7 +250,74 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterConstantDefinition(pl_pas_assParser.ConstantDefinitionContext ctx) {
+        String constantName = null;
+        String value = null;
+        Integer type = 0;
 
+        IdentifierContext constIdCtx = ctx.identifier();
+        ConstantContext constantCtx = ctx.constant();
+        if (constIdCtx != null) {
+            constantName = constIdCtx.IDENT().getSymbol().getText();
+        }
+        if (constantCtx != null) {
+            ValTypeResult result = handleConstantCtx(constantCtx);
+            TypeValue typeValue = new TypeValue(result.type(), result.value());
+            ConstantPool.putConstant(constantName, typeValue);
+        }
+
+
+    }
+
+    private static ValTypeResult handleConstantCtx(ConstantContext constantCtx) {
+        String value = null;
+        String name = null;
+        Integer type = 0;
+        IdentifierContext  identCtx = constantCtx.identifier();
+        if (identCtx != null) {
+            name = identCtx.IDENT().getSymbol().getText();
+        }
+
+
+        ConstantChrContext ctxChrContext = constantCtx.constantChr();
+        UnsignedNumberContext unsignedCtx = constantCtx.unsignedNumber();
+        StringContext strCtx = constantCtx.string();
+        if (ctxChrContext != null) {
+            UnsignedIntegerContext uintCtx =
+                    ctxChrContext.unsignedInteger();
+            TerminalNode chrNode = ctxChrContext.CHR();
+            if (uintCtx != null) {
+                value = uintCtx.NUM_INT().getSymbol().getText();
+                type = uintCtx.NUM_INT().getSymbol().getType();
+            }
+            if (chrNode != null) {
+                value = chrNode.getSymbol().getText();
+                type = chrNode.getSymbol().getType();
+            }
+        }
+        if (unsignedCtx != null) {
+            UnsignedIntegerContext uintCtx = unsignedCtx.unsignedInteger();
+            UnsignedRealContext realCtx = unsignedCtx.unsignedReal();
+            if (uintCtx != null) {
+                value = uintCtx.NUM_INT().getSymbol().getText();
+                type = uintCtx.NUM_INT().getSymbol().getType();
+            }
+            if (realCtx != null) {
+                value = realCtx.NUM_REAL().getSymbol().getText();
+                type = realCtx.NUM_REAL().getSymbol().getType();
+            }
+        }
+        if (strCtx != null) {
+            TerminalNode strLiteralNode = strCtx.STRING_LITERAL();
+            if (strLiteralNode != null) {
+                value = strLiteralNode.getSymbol().getText();
+                type = strLiteralNode.getSymbol().getType();
+            }
+        }
+        ValTypeResult result = new ValTypeResult(value, type, null);
+        return result;
+    }
+
+    private record ValTypeResult(String value, Integer type, String name) {
     }
 
     @Override
@@ -255,6 +327,8 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterConstantChr(pl_pas_assParser.ConstantChrContext ctx) {
+        ctx.CHR();
+        ctx.unsignedInteger();
 
     }
 
@@ -265,7 +339,10 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterConstant(pl_pas_assParser.ConstantContext ctx) {
-
+        IdentifierContext idCtx = ctx.identifier();
+        ConstantChrContext ctxChrContext = ctx.constantChr();
+        UnsignedNumberContext unsignedCtx = ctx.unsignedNumber();
+        StringContext strCtx = ctx.string();
     }
 
     @Override
@@ -358,7 +435,223 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterTypeDefinition(pl_pas_assParser.TypeDefinitionContext ctx) {
+        String typeName = null;
+        Integer dataType = null;
+        String value = null;
+        Integer type = 0;
+        String text = null;
+        Type_Context varTypeCtx = ctx.type_();
+        FunctionTypeContext funTypeCtx = ctx.functionType();
+        ProcedureTypeContext procTypeCtx = ctx.procedureType();
+        IdentifierContext idCtx = ctx.identifier();
+        if (idCtx != null) {
+            typeName = idCtx.IDENT().getSymbol().getText();
+        }
+        if (varTypeCtx != null) {
+            StructuredTypeContext structType =
+                    varTypeCtx.structuredType();
+            SimpleTypeContext simpleType = varTypeCtx.simpleType();
+            PointerTypeContext pointerType =
+                    varTypeCtx.pointerType();
+            if (structType != null) {
+                handleStructType(structType, typeName);
+            }
+            if (simpleType != null) {
+                ValTypeResult res = handleSimpleType(simpleType, typeName);
+                System.out.println(res);
 
+            }
+        }
+
+    }
+
+    private static ValTypeResult handleSimpleType(SimpleTypeContext simpleType, String typeName) {
+
+        ValTypeResult overall = null;
+        String value = null;
+        Integer type = null;
+
+        StringtypeContext strCtx = simpleType.stringtype();
+
+        TypeIdentifierContext idTypeContext= simpleType.typeIdentifier();
+
+        if (idTypeContext != null) {
+            IdentifierContext idContex = idTypeContext.identifier();
+            Token identToken = idContex.IDENT().getSymbol();
+
+            overall = new ValTypeResult(null,  identToken.getType(), typeName);
+            return overall;
+        }
+
+        if (strCtx != null) {
+            TerminalNode stringNode = strCtx.STRING();
+            TerminalNode lBrack = strCtx.LBRACK();
+            TerminalNode rBrack = strCtx.RBRACK();
+            UnsignedNumberContext unsigned = strCtx.unsignedNumber();
+            if (unsigned != null) {
+                UnsignedRealContext unsignedRealCtx =
+                        unsigned.unsignedReal();
+                UnsignedIntegerContext unsignedIntCtx =
+                        unsigned.unsignedInteger();
+                if (unsignedRealCtx != null) {
+                    String nameOrNum =
+                            unsignedRealCtx.NUM_REAL().getSymbol().getText();
+                }
+                if (unsignedIntCtx != null) {
+                    String nameOrNum =
+                            unsignedIntCtx.NUM_INT().getSymbol().getText();
+                }
+            }
+        }
+        TypeIdentifierContext typeIdCtx = simpleType.typeIdentifier();
+        ScalarTypeContext scalarCtx = simpleType.scalarType();
+        SubrangeTypeContext subrangeCtx = simpleType.subrangeType();
+        String theName = null;
+        Integer theType = 0;
+        if (scalarCtx != null) {
+            IdentifierListContext idListCtx = scalarCtx.identifierList();
+            if (idListCtx != null) {
+                List<IdentifierContext> idCtxList =
+                        idListCtx.identifier();
+                for (IdentifierContext idContext : idCtxList) {
+                    theName = idContext.IDENT().getSymbol().getText();
+                    theType = idContext.IDENT().getSymbol().getType();
+
+                }
+
+            }
+        }
+        if (subrangeCtx != null) {
+            List<ConstantContext> constCtxList =
+                    subrangeCtx.constant();
+            if (constCtxList != null) {
+                List<ConstantContext> constantListCtx = subrangeCtx.constant();
+                TerminalNode dotDot = subrangeCtx.DOTDOT();
+                if (dotDot != null) {
+                    Token dotDotTok = dotDot.getSymbol();
+                    Integer dotType = dotDotTok.getType();
+                    String dotText = dotDotTok.getText();
+                    overall = new ValTypeResult(null, dotType, dotText);
+                }
+                if (constantListCtx != null) {
+                    for (ConstantContext constantCtx : constantListCtx) {
+                        if(constantCtx.identifier() != null) {
+                            typeName = constantCtx.identifier().getText();
+                        }
+                        if (constantCtx.constantChr() != null) {
+                            ConstantChrContext constChrCtx = constantCtx.constantChr();
+                            if (constChrCtx.CHR() != null) {
+                                TerminalNode CHRNode =  constChrCtx.CHR();
+                                CHRNode.getSymbol().getType();
+                            }
+
+                        }
+                    }
+                }
+                List<ValTypeResult> rangeList = new ArrayList<>();
+                for (ConstantContext constCtx : constCtxList) {
+
+                    ValTypeResult result = handleConstantCtx(constCtx);
+                    rangeList.add(result);
+                    System.out.println(result);
+                }
+                SubrangeType.RANGEDef<Integer> rangeDef = new SubrangeType.RANGEDef<Integer>(
+                        Integer.valueOf(rangeList.get(0).value),
+                        Integer.valueOf(rangeList.get(1).value), rangeList.get(0).type);
+                SubrangeType<Integer> rangeType = new SubrangeType<Integer>(typeName, rangeDef);
+                TypeRegistry.addUserType(typeName, rangeType);
+                System.out.println(rangeType);
+            }
+        }
+        if (typeIdCtx != null) {
+            TerminalNode charNode = typeIdCtx.CHAR();
+            TerminalNode realNode = typeIdCtx.REAL();
+            TerminalNode intNode = typeIdCtx.INTEGER();
+            TerminalNode strNode = typeIdCtx.STRING();
+            TerminalNode boolNode = typeIdCtx.BOOLEAN();
+            if (charNode != null) {
+                overall = new ValTypeResult(null, charNode.getSymbol().getType(),
+                        charNode.getSymbol().getText());
+            }
+            if (realNode != null) {
+                overall = new ValTypeResult(null, realNode.getSymbol().getType(),
+                        realNode.getSymbol().getText());
+            }
+            if (intNode != null) {
+                overall = new ValTypeResult(null, intNode.getSymbol().getType(),
+                        intNode.getSymbol().getText());
+            }
+            if (strNode != null) {
+                overall = new ValTypeResult(null, strNode.getSymbol().getType(),
+                        strNode.getSymbol().getText());
+            }
+            if (boolNode != null) {
+                overall = new ValTypeResult(null, boolNode.getSymbol().getType(),
+                        boolNode.getSymbol().getText());
+            }
+        }
+        return overall;
+    }
+
+    private static void handleStructType(StructuredTypeContext structType, String typeName) {
+        UnpackedStructuredTypeContext unpackCtx =
+                structType.unpackedStructuredType();
+        if (unpackCtx != null) {
+            handleUnpacked(unpackCtx, typeName);
+        }
+    }
+
+    private static void handleUnpacked(UnpackedStructuredTypeContext unpackCtx,
+                                       String typeName) {
+        ArrayTypeContext arrCtx = unpackCtx.arrayType();
+        SetTypeContext setCtx = unpackCtx.setType();
+        FileTypeContext fileCtx = unpackCtx.fileType();
+        // here we have more do it in a function later
+        Integer arrNodeType = null;
+        String arrNodeName = null;
+        Integer ofNodeType = null;
+        String ofNodeName = null;
+        Token idTok = null;
+        if (arrCtx != null) {
+            ComponentTypeContext compType = arrCtx.componentType();
+            TypeListContext typeList = arrCtx.typeList();
+            Type_Context typeCtx = compType.type_();
+            if (typeList != null) {
+                List<IndexTypeContext> idxTypeList = typeList.indexType();
+                for (IndexTypeContext indexType : idxTypeList) {
+                    SimpleTypeContext simpleType = indexType.simpleType();
+                    IdentifierContext idContext = simpleType.typeIdentifier().identifier();
+                    idTok = idContext.IDENT().getSymbol();
+                    if (simpleType != null) {
+                        ValTypeResult result = handleSimpleType(simpleType, typeName);
+                    }
+                }
+            }
+
+            TypeListContext typeListCtx = arrCtx.typeList();
+            if (typeListCtx != null) {
+                List<IndexTypeContext> idxTypeList = typeListCtx.indexType();
+                for (IndexTypeContext indexType : idxTypeList) {
+                    SimpleTypeContext simpleType = indexType.simpleType();
+                    IdentifierContext idContext = simpleType.typeIdentifier().identifier();
+                    idTok = idContext.IDENT().getSymbol();
+                }
+            }
+
+            TerminalNode arrayNode = arrCtx.ARRAY();
+
+            TerminalNode ofNode = arrCtx.OF();
+            if (arrayNode != null) {
+                arrNodeType = arrayNode.getSymbol().getType();
+                arrNodeName = arrayNode.getSymbol().getText();
+            }
+            if (ofNode != null) {
+                ofNodeType = ofNode.getSymbol().getType();
+                ofNodeName = ofNode.getSymbol().getText();
+            }
+            System.out.println("arr type : " + arrNodeType + " arr name : " + arrNodeName  +
+                "of type : " + ofNodeType + " of name : " + ofNodeName);
+        }
     }
 
     @Override
@@ -737,14 +1030,14 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     public void exitVariableDeclaration(pl_pas_assParser.VariableDeclarationContext ctx) {
         List<VarDeclare> values = new ArrayList<>();
         values.addAll(variableDecl.values());
-        for (VarDeclare var: values) {
+        for (VarDeclare var : values) {
             VarDeclare temp = variableDecl.get(var.getName());
             actBinding.addNewVarReference(var, "0");
 
         }
     }
 
-    private  void varDeclaration(VariableDeclarationContext ctx) {
+    private void varDeclaration(VariableDeclarationContext ctx) {
         TerminalNode colon = ctx.COLON();
         String varName = null;
         if (colon != null) {

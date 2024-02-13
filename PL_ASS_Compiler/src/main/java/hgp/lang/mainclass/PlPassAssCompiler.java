@@ -47,14 +47,6 @@ public class PlPassAssCompiler {
             ParseTreeWalker walker = ParseTreeWalker.DEFAULT;
             PlPasAssLangListener langListener = new PlPasAssLangListener();
             walker.walk(langListener, tree);
-            Expression result = langListener.getExpression();
-            Map<String, VarDeclare> variables = langListener.getVariableDecl();
-            System.out.println(result);
-            ShuntingYard theParser = new ShuntingYard(result);
-            List<RuntimeExpression> parseResult = theParser.parse();
-            NumericLogic numLogic = new NumericLogic();
-            NumericLogic.Result res = numLogic.calculateTerm(parseResult);
-            System.out.println(res);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
