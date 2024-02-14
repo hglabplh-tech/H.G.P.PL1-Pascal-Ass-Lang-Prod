@@ -47,8 +47,10 @@ public class Assignment extends CodeStep implements StepRunner {
             // change value in binding
             String varName = getTarget().getSymbol().getText();
             VariableReference ref = getBinding().getFromPool(varName);
-            VariableReference newRef = new VariableReference(ref.varType(), theValue);
-            getBinding().changeINPool(varName, newRef);
+            if (ref != null) {
+                VariableReference newRef = new VariableReference(ref.varType(), theValue);
+                getBinding().changeINPool(varName, newRef);
+            }
             this.getSource().getNodes().clear();
         } else if (!this.getSource().getNodes().isEmpty()){
             TerminalNode node = this.getSource().getNodes().get(0);

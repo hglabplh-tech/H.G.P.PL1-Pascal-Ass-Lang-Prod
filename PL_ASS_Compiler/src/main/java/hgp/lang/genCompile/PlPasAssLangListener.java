@@ -329,8 +329,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterConstantChr(pl_pas_assParser.ConstantChrContext ctx) {
-        ctx.CHR();
-        ctx.unsignedInteger();
+
 
     }
 
@@ -808,7 +807,44 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterProcedureType(pl_pas_assParser.ProcedureTypeContext ctx) {
+        System.out.println("enterProcedureType");
+        TerminalNode procedureNode = ctx.PROCEDURE();
+        if (procedureNode != null) {
+            FormalParameterListContext parmList = ctx.formalParameterList();
+            if (parmList != null) {
+                List<FormalParameterSectionContext> parmSection =
+                        parmList.formalParameterSection();
+                if (parmSection != null) {
+                    for (FormalParameterSectionContext parmSectionCtx: parmSection) {
+                        TerminalNode procedureInnerNode =  parmSectionCtx.PROCEDURE();
+                        TerminalNode varNode = parmSectionCtx.VAR();
+                        ParameterGroupContext parmGroupCtx =
+                                parmSectionCtx.parameterGroup();
+                        if (parmGroupCtx != null) {
+                            IdentifierListContext idListCtx = parmGroupCtx.identifierList();
+                            if (idListCtx != null) {
+                                List<IdentifierContext> idCtxCollection = idListCtx.identifier();
+                                for (IdentifierContext idCtx: idCtxCollection) {
+                                    TerminalNode idNode = idCtx.IDENT();
+                                    Token idTok = idNode.getSymbol();
 
+
+                                }
+                            }
+                        }
+                        if (varNode != null) {
+
+                        }
+
+                        if (procedureInnerNode != null) {
+
+                        }
+
+                    }
+                }
+
+            }
+        }
     }
 
     @Override
@@ -1214,7 +1250,9 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterProcedureOrFunctionDeclaration(pl_pas_assParser.ProcedureOrFunctionDeclarationContext ctx) {
-
+        System.out.println("enterProcedureOrFunctionDeclaration");
+        ProcedureDeclarationContext procDeclare = ctx.procedureDeclaration();
+        procDeclare.formalParameterList();
     }
 
     @Override
@@ -1224,7 +1262,51 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterProcedureDeclaration(pl_pas_assParser.ProcedureDeclarationContext ctx) {
+        System.out.println("enterProcedureDeclaration");
+            TerminalNode procedureNode = ctx.PROCEDURE();
+            if (procedureNode != null) {
+                System.out.println(procedureNode.getSymbol().getType() + " :: " +
+                        procedureNode.getSymbol().getText());
+                if (ctx.identifier() != null) {
+                    System.out.println(ctx.identifier().IDENT().getSymbol().getText());
+                }
 
+                FormalParameterListContext parmList = ctx.formalParameterList();
+                if (parmList != null) {
+                    List<FormalParameterSectionContext> parmSection =
+                            parmList.formalParameterSection();
+                    if (parmSection != null) {
+                        for (FormalParameterSectionContext parmSectionCtx: parmSection) {
+                            TerminalNode procedureInnerNode =  parmSectionCtx.PROCEDURE();
+                            TerminalNode varNode = parmSectionCtx.VAR();
+                            ParameterGroupContext parmGroupCtx =
+                                    parmSectionCtx.parameterGroup();
+                            if (parmGroupCtx != null) {
+                                IdentifierListContext idListCtx = parmGroupCtx.identifierList();
+                                if (idListCtx != null) {
+                                    List<IdentifierContext> idCtxCollection = idListCtx.identifier();
+                                    for (IdentifierContext idCtx: idCtxCollection) {
+                                        TerminalNode idNode = idCtx.IDENT();
+                                        Token idTok = idNode.getSymbol();
+
+                                        System.out.println(idTok.getType() + " :: " +
+                                                idTok.getText());
+                                    }
+                                }
+                            }
+                            if (varNode != null) {
+
+                            }
+
+                            if (procedureInnerNode != null) {
+
+                            }
+
+                        }
+                    }
+
+                }
+            }
     }
 
     @Override
@@ -1549,26 +1631,32 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     @Override
     public void enterExpression(pl_pas_assParser.ExpressionContext ctx) {
         List<ExpressionContext> exprContext = ctx.expression();
-        for (ExpressionContext exprElement : exprContext) {
-            List<SimpleExpressionContext> sexprContextList =
-                    exprElement.simpleExpression();
-            for (SimpleExpressionContext sexprContext : sexprContextList) {
-                AdditiveoperatorContext addCtx = sexprContext.additiveoperator();
-                if (addCtx != null) {
-                    TerminalNode plus = addCtx.PLUS();
-                    TerminalNode minus = addCtx.MINUS();
+        if (exprContext != null) {
+            for (ExpressionContext exprElement : exprContext) {
+                List<SimpleExpressionContext> sexprContextList =
+                        exprElement.simpleExpression();
+                if (sexprContextList != null) {
+                    for (SimpleExpressionContext sexprContext : sexprContextList) {
+                        AdditiveoperatorContext addCtx = sexprContext.additiveoperator();
+                        if (addCtx != null) {
+                            TerminalNode plus = addCtx.PLUS();
+                            TerminalNode minus = addCtx.MINUS();
 
-                }
-                TermContext termCtx = sexprContext.term();
-                if (termCtx != null) {
-                    termCtx.signedFactor();
+                        }
+                        TermContext termCtx = sexprContext.term();
+                        if (termCtx != null) {
+                            termCtx.signedFactor();
+                        }
+
+                        if (exprElement.expression() != null) {
+                            //enterExpression(exprElement.expression());
+                        }
+                    }
                 }
 
-                if (exprElement.expression() != null) {
-                    //enterExpression(exprElement.expression());
-                }
             }
         }
+
     }
 
     @Override
@@ -1692,12 +1780,12 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
 
     @Override
     public void enterUnsignedConstant(pl_pas_assParser.UnsignedConstantContext ctx) {
-        ctx.unsignedNumber().unsignedInteger().NUM_INT();
+
     }
 
     @Override
     public void exitUnsignedConstant(pl_pas_assParser.UnsignedConstantContext ctx) {
-        UnsignedIntegerContext intCtx = ctx.unsignedNumber().unsignedInteger();
+
 
     }
 

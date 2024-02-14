@@ -41,13 +41,19 @@ public class ShuntingYard {
                 output.add(reallyAddToOutput(token));
             } else if (token.getType() == IDENT) {
                 VariableReference ref = theBinding.getFromPool(token.getText());
-                Token newToken = new CommonToken(ref.varType(), ref.value().toString());
-                output.add(reallyAddToOutput(newToken));
+                if (ref != null && ref.value() != null && ref.varType() != null
+                ) {
+                    Token newToken = new CommonToken(ref.varType(), ref.value().toString());
+                    output.add(reallyAddToOutput(newToken));
+                }
+
 
             } else if (token.getType() == VAR) {
                 VariableReference ref = theBinding.getFromPool(token.getText());
-                Token newToken = new CommonToken(ref.varType(), ref.value().toString());
-                output.add(reallyAddToOutput(newToken));
+                if (ref != null) {
+                    Token newToken = new CommonToken(ref.varType(), ref.value().toString());
+                    output.add(reallyAddToOutput(newToken));
+                }
 
            /* } else if (token instanceof FunctionToken) {
                 Call call = new Call((FunctionToken) token);

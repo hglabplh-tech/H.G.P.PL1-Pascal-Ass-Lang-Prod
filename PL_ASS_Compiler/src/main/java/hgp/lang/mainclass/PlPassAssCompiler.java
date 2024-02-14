@@ -48,6 +48,7 @@ public class PlPassAssCompiler {
             PlPasAssLangListener langListener = new PlPasAssLangListener();
             walker.walk(langListener, tree);
         } catch (Exception ex) {
+            ex.printStackTrace();
             System.out.println(ex.getMessage());
         }
     }
