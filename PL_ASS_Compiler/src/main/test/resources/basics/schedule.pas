@@ -48,7 +48,8 @@ PROGRAM a1 (input,output);
     TYPE 
         { The employee name type. }
         EmployeeType = string[EmployeeMaxLen];
-
+        {dummy to get program translated  cannot find component 'uses' dayio}
+         DayType = 0..365
         { The type of the schedule ARRAY. }
         { HourType = FirstHour..LastHour; }
         HourType = 8..17;

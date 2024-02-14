@@ -2,12 +2,15 @@ package hgp.lang.types;
 
 import com.beust.ah.A;
 
-public class ArrayType extends USERType {
-    private final ADefinition theTypeDef;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
-    public ArrayType(String typeName, Integer astart, Integer aend, Integer atype) {
+public class ArrayType extends USERType {
+    private final ADefinition theTypeDef  = new ADefinition();
+
+    public ArrayType(String typeName) {
         super(typeName);
-        this.theTypeDef = new ADefinition(astart, aend, atype);
     }
 
     public ADefinition theTypeDef() {
@@ -15,19 +18,18 @@ public class ArrayType extends USERType {
     }
 
     public static class ADefinition{
-        private final Integer astart;
+        private Integer astart;
 
-        private final Integer aend;
+        private Integer aend;
 
-        private final Integer alength;
+        private Integer alength;
 
-        private final Integer atype;
+        private String aElementType;
 
-        public ADefinition(Integer astart, Integer aend, Integer atype) {
-            this.astart = astart;
-            this.aend = aend;
-            this.atype = atype;
-            this.alength = (aend - astart);
+        private List<String> aIndexTypes = new ArrayList<>();
+
+        public ADefinition() {
+
         }
 
         public Integer astart() {
@@ -42,8 +44,42 @@ public class ArrayType extends USERType {
             return alength;
         }
 
-        public Integer atype() {
-            return atype;
+        public String aElemenType() {
+            return aElementType;
+        }
+
+        public List<String> aIndexTypes() {
+            return aIndexTypes;
+        }
+
+        public ADefinition setAstart(Integer astart) {
+            this.astart = astart;
+            return this;
+        }
+
+        public ADefinition setAend(Integer aend) {
+            this.aend = aend;
+            return this;
+        }
+
+        public ADefinition setAlength(Integer alength) {
+            this.alength = alength;
+            return this;
+        }
+
+        public ADefinition setaElementType(String aElementType) {
+            this.aElementType = aElementType;
+            return this;
+        }
+
+        public ADefinition setaIndexTypes(List<String> aIndexTypes) {
+            this.aIndexTypes = aIndexTypes;
+            return this;
+        }
+
+        public ADefinition addaIndexType(String aIndexType) {
+            this.aIndexTypes.add(aIndexType);
+            return this;
         }
     }
 }

@@ -12,29 +12,30 @@ public class TypeRegistry {
 
     private static final Map<String, USERType> typeMap = new HashMap<>();
 
+    private static final Map<String, Integer> typeMapByTypeID = new HashMap<>();
+
     private static Random random = new Random(6754321);
 
     static {
         InternTypes.Internal type = new InternTypes.Internal(InternTypes.InternBaseTypes.REALType.name(),
                 REAL, InternTypes.InternBaseTypes.REALType);
-        registerType(type.theType().name(), type.theType().javaTyp(), type);
+        addUserType(type.theType().name(), type);
         type = new InternTypes.Internal(InternTypes.InternBaseTypes.INTEGERType.name(),
                 INTEGER, InternTypes.InternBaseTypes.INTEGERType);
-        registerType(type.theType().name(), type.theType().javaTyp(), type);
+        addUserType(type.theType().name(), type);
         type = new InternTypes.Internal(InternTypes.InternBaseTypes.STRINGType.name(),
                 STRING, InternTypes.InternBaseTypes.STRINGType);
-        registerType(type.theType().name(), type.theType().javaTyp(), type);
+        addUserType(type.theType().name(), type);
         type = new InternTypes.Internal(InternTypes.InternBaseTypes.BOOLType.name(),
                 BOOLEAN, InternTypes.InternBaseTypes.BOOLType);
-        registerType(type.theType().name(), type.theType().javaTyp(), type);
+        addUserType(type.theType().name(),  type);
     }
-    public static void registerType(String typeName, Class javaClass, USERType type) {
-        typeMap.put(typeName, type);
-    }
+
 
     public static Integer addUserType(String typeName, USERType newType) {
         Integer typeId = userTypeOffset + random.nextInt();
         typeMap.put(typeName, newType);
+        typeMapByTypeID.put(typeName, typeId);
         return typeId;
     }
 

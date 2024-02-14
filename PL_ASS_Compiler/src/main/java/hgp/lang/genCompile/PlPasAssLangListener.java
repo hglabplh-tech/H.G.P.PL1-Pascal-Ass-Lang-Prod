@@ -13,6 +13,8 @@ import hgp.lang.gparser.pl_pas_assBaseListener;
 import hgp.lang.gparser.pl_pas_assListener;
 import hgp.lang.gparser.pl_pas_assParser;
 import hgp.lang.gparser.pl_pas_assParser.*;
+import hgp.lang.types.ArrayType;
+import hgp.lang.types.StringType;
 import hgp.lang.types.SubrangeType;
 import hgp.lang.types.TypeRegistry;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -506,8 +508,62 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         TypeIdentifierContext typeIdCtx = simpleType.typeIdentifier();
         ScalarTypeContext scalarCtx = simpleType.scalarType();
         SubrangeTypeContext subrangeCtx = simpleType.subrangeType();
+        StringtypeContext stringCtx = simpleType.stringtype();
         String theName = null;
         Integer theType = 0;
+        if (stringCtx != null) {
+            List<ValTypeResult> results = new ArrayList<>();
+            UnsignedNumberContext unsigned = stringCtx.unsignedNumber();
+            TerminalNode stringNode  = stringCtx.STRING();
+            IdentifierContext strIdCtx = stringCtx.identifier();
+            StringType.ParmType pType = StringType.ParmType.CONST;
+            if (strIdCtx != null) {
+                TerminalNode ident = strIdCtx.IDENT();
+                if (ident != null) {
+                    Token identTok = ident.getSymbol();
+                    theName = identTok.getText();
+                    theType = identTok.getType();
+                    ValTypeResult res = new ValTypeResult(null, theType, theName);
+                    results.add(res);
+                    pType = StringType.ParmType.IDENT;
+                }
+            }
+            if (stringNode != null) {
+                Token stringTok = stringNode.getSymbol();
+                theName = stringTok.getText();
+                theType = stringTok.getType();
+
+            }
+
+            if (unsigned != null) {
+                UnsignedRealContext realCtx = unsigned.unsignedReal();
+                UnsignedIntegerContext uintCtx = unsigned.unsignedInteger();
+                String text = null;
+                Integer strType = null;
+                if (realCtx != null) {
+                    text = realCtx.NUM_REAL().getSymbol().getText();
+                    strType = realCtx.NUM_REAL().getSymbol().getType();
+                }
+                if (uintCtx != null) {
+                    strType = uintCtx.NUM_INT().getSymbol().getType();
+                    text = uintCtx.NUM_INT().getSymbol().getText();
+                }
+                overall = new ValTypeResult(text, strType,null);
+
+                ValTypeResult res = new ValTypeResult(text, strType, null);
+                results.add(res);
+                pType = StringType.ParmType.CONST;
+            }
+            String parmValue = null;
+            if (pType.equals(StringType.ParmType.IDENT)) {
+                parmValue = results.get(0).name;
+            } else  if (pType.equals(StringType.ParmType.CONST)) {
+                parmValue = results.get(0).value;
+            }
+            StringType strType = new StringType(typeName,
+                    parmValue, pType);
+            TypeRegistry.addUserType(typeName, strType);
+        }
         if (scalarCtx != null) {
             IdentifierListContext idListCtx = scalarCtx.identifierList();
             if (idListCtx != null) {
@@ -606,16 +662,47 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         ArrayTypeContext arrCtx = unpackCtx.arrayType();
         SetTypeContext setCtx = unpackCtx.setType();
         FileTypeContext fileCtx = unpackCtx.fileType();
-        // here we have more do it in a function later
-        Integer arrNodeType = null;
-        String arrNodeName = null;
-        Integer ofNodeType = null;
-        String ofNodeName = null;
+
+        String elementTypeName = null;
         Token idTok = null;
         if (arrCtx != null) {
             ComponentTypeContext compType = arrCtx.componentType();
-            TypeListContext typeList = arrCtx.typeList();
             Type_Context typeCtx = compType.type_();
+
+            if (typeCtx != null) {
+
+                PointerTypeContext pointerCtx =
+                        typeCtx.pointerType();
+                StructuredTypeContext structCtx =
+                        typeCtx.structuredType();
+                SimpleTypeContext simpleTCtx = typeCtx.simpleType();
+                if (simpleTCtx != null) {
+                    TypeIdentifierContext typeIdContext =
+                            simpleTCtx.typeIdentifier();
+                    if (typeIdContext != null) {
+                        IdentifierContext idContext =
+                                typeIdContext.identifier();
+                        if (idContext != null) {
+                            Token typeIdentifierTok =
+                                    idContext.IDENT().getSymbol();
+                            elementTypeName =
+                                    typeIdentifierTok.getText();
+                        }
+                    }
+                    ValTypeResult result =
+                handleSimpleType(simpleTCtx, typeName);
+
+                }
+                if (pointerCtx != null) {
+                    TerminalNode pointerNode = pointerCtx.POINTER();
+                    Token pointerTok = pointerNode.getSymbol();
+
+                }
+            }
+            TypeListContext typeList = arrCtx.typeList();
+            ValTypeResult result = null;
+            typeCtx = compType.type_();
+
             if (typeList != null) {
                 List<IndexTypeContext> idxTypeList = typeList.indexType();
                 for (IndexTypeContext indexType : idxTypeList) {
@@ -623,34 +710,40 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                     IdentifierContext idContext = simpleType.typeIdentifier().identifier();
                     idTok = idContext.IDENT().getSymbol();
                     if (simpleType != null) {
-                        ValTypeResult result = handleSimpleType(simpleType, typeName);
+                        result = handleSimpleType(simpleType, typeName);
                     }
                 }
             }
 
             TypeListContext typeListCtx = arrCtx.typeList();
+            List<Token> idTokenList = new ArrayList<>();
             if (typeListCtx != null) {
                 List<IndexTypeContext> idxTypeList = typeListCtx.indexType();
                 for (IndexTypeContext indexType : idxTypeList) {
                     SimpleTypeContext simpleType = indexType.simpleType();
-                    IdentifierContext idContext = simpleType.typeIdentifier().identifier();
-                    idTok = idContext.IDENT().getSymbol();
+                    if (simpleType != null) {
+                        TypeIdentifierContext typeIdContext =
+                                simpleType.typeIdentifier();
+                        if (typeIdContext != null) {
+                            IdentifierContext idCtx = typeIdContext.identifier();
+                            if (idCtx != null) {
+                                idTok = idCtx.IDENT().getSymbol();
+                                idTokenList.add(idTok);
+                            }
+                        }
+                    }
+
                 }
             }
+            ArrayType arrayType = new ArrayType(typeName);
 
-            TerminalNode arrayNode = arrCtx.ARRAY();
+            ArrayType.ADefinition arrayDef = arrayType.theTypeDef()
+                    .setaElementType(elementTypeName);
+            for (Token idToken: idTokenList) {
+                arrayDef = arrayDef.addaIndexType(idToken.getText());
+            }
+            TypeRegistry.addUserType(typeName,arrayType);
 
-            TerminalNode ofNode = arrCtx.OF();
-            if (arrayNode != null) {
-                arrNodeType = arrayNode.getSymbol().getType();
-                arrNodeName = arrayNode.getSymbol().getText();
-            }
-            if (ofNode != null) {
-                ofNodeType = ofNode.getSymbol().getType();
-                ofNodeName = ofNode.getSymbol().getText();
-            }
-            System.out.println("arr type : " + arrNodeType + " arr name : " + arrNodeName  +
-                "of type : " + ofNodeType + " of name : " + ofNodeName);
         }
     }
 
