@@ -10,8 +10,8 @@ public class Terminals extends SimpleStatement  {
 
 
 
-    public Terminals(Token tok, String text, Integer type, Integer line) {
-        super(tok);
+    public Terminals(Token tok, String name,String text, Integer type, Integer line) {
+        super(tok, name);
         this.text = text;
         this.line = line;
         this.type = type;
