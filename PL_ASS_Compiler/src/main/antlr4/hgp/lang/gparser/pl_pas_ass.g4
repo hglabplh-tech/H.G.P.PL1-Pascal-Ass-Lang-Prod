@@ -240,7 +240,7 @@ subrangeType
 
 typeIdentifier
     : identifier
-    | (CHAR | BOOLEAN | INTEGER | REAL | STRING)
+    | (CHAR | BOOLEAN | INTEGER | REAL | STRING | ANY)
     ;
 
 structuredType
@@ -623,6 +623,9 @@ AND
 
 ARRAY
     : 'ARRAY'
+    ;
+ANY
+    : 'ANY'
     ;
 
 BEGIN

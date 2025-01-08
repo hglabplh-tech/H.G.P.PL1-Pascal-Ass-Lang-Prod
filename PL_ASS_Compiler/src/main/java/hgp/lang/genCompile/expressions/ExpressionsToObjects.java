@@ -12,22 +12,24 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.ArrayList;
 import java.util.List;
 
+import static hgp.lang.gparser.pl_pas_assParser.*;
+
 public class ExpressionsToObjects {
-    public static ValTypeResult handleConstantCtx(pl_pas_assParser.ConstantContext constantCtx) {
+    public static ValTypeResult handleConstantCtx(ConstantContext constantCtx) {
         String value = null;
         String name = null;
         Integer type = 0;
-        pl_pas_assParser.IdentifierContext identCtx = constantCtx.identifier();
+        IdentifierContext identCtx = constantCtx.identifier();
         if (identCtx != null) {
             name = identCtx.IDENT().getSymbol().getText();
         }
 
 
-        pl_pas_assParser.ConstantChrContext ctxChrContext = constantCtx.constantChr();
-        pl_pas_assParser.UnsignedNumberContext unsignedCtx = constantCtx.unsignedNumber();
-        pl_pas_assParser.StringContext strCtx = constantCtx.string();
+        ConstantChrContext ctxChrContext = constantCtx.constantChr();
+        UnsignedNumberContext unsignedCtx = constantCtx.unsignedNumber();
+        StringContext strCtx = constantCtx.string();
         if (ctxChrContext != null) {
-            pl_pas_assParser.UnsignedIntegerContext uintCtx =
+            UnsignedIntegerContext uintCtx =
                     ctxChrContext.unsignedInteger();
             TerminalNode chrNode = ctxChrContext.CHR();
             if (uintCtx != null) {
@@ -40,8 +42,8 @@ public class ExpressionsToObjects {
             }
         }
         if (unsignedCtx != null) {
-            pl_pas_assParser.UnsignedIntegerContext uintCtx = unsignedCtx.unsignedInteger();
-            pl_pas_assParser.UnsignedRealContext realCtx = unsignedCtx.unsignedReal();
+            UnsignedIntegerContext uintCtx = unsignedCtx.unsignedInteger();
+            UnsignedRealContext realCtx = unsignedCtx.unsignedReal();
             if (uintCtx != null) {
                 value = uintCtx.NUM_INT().getSymbol().getText();
                 type = uintCtx.NUM_INT().getSymbol().getType();
@@ -62,18 +64,116 @@ public class ExpressionsToObjects {
         return result;
     }
 
-    public static ValTypeResult handleSimpleType(pl_pas_assParser.SimpleTypeContext simpleType, String typeName) {
+    public static ValTypeResult handleSimpleExpression(List<SimpleExpressionContext> expressionList) {
+            for (SimpleExpressionContext simpleExpr : expressionList) {
+                TermContext termCtx = simpleExpr.term();
+                if (termCtx != null) {
+                    MultiplicativeoperatorContext multCtx = termCtx.multiplicativeoperator();
+                    if (multCtx != null) {
+                        TerminalNode slashNode = multCtx.SLASH();
+                        TerminalNode andNode = multCtx.AND();
+                        TerminalNode starNode = multCtx.STAR();
+                        TerminalNode divNode = multCtx.DIV();
+                        TerminalNode modNode = multCtx.MOD();
+                        if (slashNode != null) {
+
+                        }
+                        if (andNode != null) {
+
+                        }
+                        if (starNode != null) {
+
+                        }
+                        if (divNode != null) {
+
+                        }
+                        if (modNode != null) {
+
+                        }
+                    }
+                    SignedFactorContext sfactCtx = termCtx.signedFactor();
+                    if (sfactCtx != null) {
+                        sfactCtx.MINUS();
+                        sfactCtx.PLUS();
+                        FactorContext factCtx = sfactCtx.factor();
+                        if (factCtx != null) {
+                            Set_Context setCtx = factCtx.set_();
+                            if (setCtx != null) {
+                                ElementListContext elemListCtx = setCtx.elementList();
+                                if (elemListCtx != null) {
+                                    for (ElementContext elemCtx : elemListCtx.element()){
+                                        List<ExpressionContext> exprCtx = elemCtx.expression();
+
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    termCtx = termCtx.term();
+
+                     // rcursion of term build own method
+                }
+                simpleExpr.simpleExpression(); // recursion
+            }
+
+            return null;
+    }
+
+    public static ValTypeResult handleRelationaloperatorContextNodes(
+            List<RelationaloperatorContext> relOpCtxList) {
+        if(relOpCtxList != null) {
+            for (RelationaloperatorContext relOpCtx : relOpCtxList) {
+                TerminalNode geNode = relOpCtx.GE();
+                TerminalNode gtNode = relOpCtx.GT();
+                TerminalNode inNode = relOpCtx.IN();
+                TerminalNode eqNode = relOpCtx.EQUAL();
+                TerminalNode leNode = relOpCtx.LE();
+                TerminalNode ltNode = relOpCtx.LT();
+                TerminalNode neqNode = relOpCtx.NOT_EQUAL();
+
+                if (geNode != null) {
+
+                }
+                if (gtNode != null) {
+
+                }
+                if (inNode != null) {
+
+                }
+                if (eqNode != null) {
+
+                }
+                if (neqNode != null) {
+
+                }
+                if (leNode != null) {
+
+                }
+                if (ltNode != null) {
+
+                }
+
+
+
+
+            }
+        }
+        return null;
+    }
+
+    public static ValTypeResult handleSimpleType(SimpleTypeContext simpleType, String typeName) {
 
         ValTypeResult overall = null;
         String value = null;
         Integer type = null;
 
-        pl_pas_assParser.StringtypeContext strCtx = simpleType.stringtype();
+        StringtypeContext strCtx = simpleType.stringtype();
 
-        pl_pas_assParser.TypeIdentifierContext idTypeContext= simpleType.typeIdentifier();
+        TypeIdentifierContext idTypeContext= simpleType.typeIdentifier();
 
         if (idTypeContext != null) {
-            pl_pas_assParser.IdentifierContext idContex = idTypeContext.identifier();
+            IdentifierContext idContex = idTypeContext.identifier();
             Token identToken = idContex.IDENT().getSymbol();
 
             overall = new ValTypeResult(null,  identToken.getType(), typeName);
@@ -84,11 +184,11 @@ public class ExpressionsToObjects {
             TerminalNode stringNode = strCtx.STRING();
             TerminalNode lBrack = strCtx.LBRACK();
             TerminalNode rBrack = strCtx.RBRACK();
-            pl_pas_assParser.UnsignedNumberContext unsigned = strCtx.unsignedNumber();
+            UnsignedNumberContext unsigned = strCtx.unsignedNumber();
             if (unsigned != null) {
-                pl_pas_assParser.UnsignedRealContext unsignedRealCtx =
+                UnsignedRealContext unsignedRealCtx =
                         unsigned.unsignedReal();
-                pl_pas_assParser.UnsignedIntegerContext unsignedIntCtx =
+                UnsignedIntegerContext unsignedIntCtx =
                         unsigned.unsignedInteger();
                 if (unsignedRealCtx != null) {
                     String nameOrNum =
@@ -100,17 +200,17 @@ public class ExpressionsToObjects {
                 }
             }
         }
-        pl_pas_assParser.TypeIdentifierContext typeIdCtx = simpleType.typeIdentifier();
-        pl_pas_assParser.ScalarTypeContext scalarCtx = simpleType.scalarType();
-        pl_pas_assParser.SubrangeTypeContext subrangeCtx = simpleType.subrangeType();
-        pl_pas_assParser.StringtypeContext stringCtx = simpleType.stringtype();
+        TypeIdentifierContext typeIdCtx = simpleType.typeIdentifier();
+        ScalarTypeContext scalarCtx = simpleType.scalarType();
+        SubrangeTypeContext subrangeCtx = simpleType.subrangeType();
+        StringtypeContext stringCtx = simpleType.stringtype();
         String theName = null;
         Integer theType = 0;
         if (stringCtx != null) {
             List<ValTypeResult> results = new ArrayList<>();
-            pl_pas_assParser.UnsignedNumberContext unsigned = stringCtx.unsignedNumber();
+            UnsignedNumberContext unsigned = stringCtx.unsignedNumber();
             TerminalNode stringNode  = stringCtx.STRING();
-            pl_pas_assParser.IdentifierContext strIdCtx = stringCtx.identifier();
+            IdentifierContext strIdCtx = stringCtx.identifier();
             StringType.ParmType pType = StringType.ParmType.CONST;
             if (strIdCtx != null) {
                 TerminalNode ident = strIdCtx.IDENT();
@@ -131,8 +231,8 @@ public class ExpressionsToObjects {
             }
 
             if (unsigned != null) {
-                pl_pas_assParser.UnsignedRealContext realCtx = unsigned.unsignedReal();
-                pl_pas_assParser.UnsignedIntegerContext uintCtx = unsigned.unsignedInteger();
+                UnsignedRealContext realCtx = unsigned.unsignedReal();
+                UnsignedIntegerContext uintCtx = unsigned.unsignedInteger();
                 String text = null;
                 Integer strType = null;
                 if (realCtx != null) {
@@ -160,11 +260,11 @@ public class ExpressionsToObjects {
             TypeRegistry.addUserType(typeName, strType);
         }
         if (scalarCtx != null) {
-            pl_pas_assParser.IdentifierListContext idListCtx = scalarCtx.identifierList();
+            IdentifierListContext idListCtx = scalarCtx.identifierList();
             if (idListCtx != null) {
-                List<pl_pas_assParser.IdentifierContext> idCtxList =
+                List<IdentifierContext> idCtxList =
                         idListCtx.identifier();
-                for (pl_pas_assParser.IdentifierContext idContext : idCtxList) {
+                for (IdentifierContext idContext : idCtxList) {
                     theName = idContext.IDENT().getSymbol().getText();
                     theType = idContext.IDENT().getSymbol().getType();
 
@@ -173,10 +273,10 @@ public class ExpressionsToObjects {
             }
         }
         if (subrangeCtx != null) {
-            List<pl_pas_assParser.ConstantContext> constCtxList =
+            List<ConstantContext> constCtxList =
                     subrangeCtx.constant();
             if (constCtxList != null) {
-                List<pl_pas_assParser.ConstantContext> constantListCtx = subrangeCtx.constant();
+                List<ConstantContext> constantListCtx = subrangeCtx.constant();
                 TerminalNode dotDot = subrangeCtx.DOTDOT();
                 if (dotDot != null) {
                     Token dotDotTok = dotDot.getSymbol();
@@ -185,12 +285,12 @@ public class ExpressionsToObjects {
                     overall = new ValTypeResult(null, dotType, dotText);
                 }
                 if (constantListCtx != null) {
-                    for (pl_pas_assParser.ConstantContext constantCtx : constantListCtx) {
+                    for (ConstantContext constantCtx : constantListCtx) {
                         if(constantCtx.identifier() != null) {
                             typeName = constantCtx.identifier().getText();
                         }
                         if (constantCtx.constantChr() != null) {
-                            pl_pas_assParser.ConstantChrContext constChrCtx = constantCtx.constantChr();
+                            ConstantChrContext constChrCtx = constantCtx.constantChr();
                             if (constChrCtx.CHR() != null) {
                                 TerminalNode CHRNode =  constChrCtx.CHR();
                                 CHRNode.getSymbol().getType();
@@ -200,7 +300,7 @@ public class ExpressionsToObjects {
                     }
                 }
                 List<ValTypeResult> rangeList = new ArrayList<>();
-                for (pl_pas_assParser.ConstantContext constCtx : constCtxList) {
+                for (ConstantContext constCtx : constCtxList) {
 
                     ValTypeResult result = handleConstantCtx(constCtx);
                     rangeList.add(result);
@@ -244,38 +344,38 @@ public class ExpressionsToObjects {
         return overall;
     }
 
-    public static void handleStructType(pl_pas_assParser.StructuredTypeContext structType, String typeName) {
-        pl_pas_assParser.UnpackedStructuredTypeContext unpackCtx =
+    public static void handleStructType(StructuredTypeContext structType, String typeName) {
+        UnpackedStructuredTypeContext unpackCtx =
                 structType.unpackedStructuredType();
         if (unpackCtx != null) {
             handleUnpacked(unpackCtx, typeName);
         }
     }
 
-    public static void handleUnpacked(pl_pas_assParser.UnpackedStructuredTypeContext unpackCtx,
+    public static void handleUnpacked(UnpackedStructuredTypeContext unpackCtx,
                                       String typeName) {
-        pl_pas_assParser.ArrayTypeContext arrCtx = unpackCtx.arrayType();
-        pl_pas_assParser.SetTypeContext setCtx = unpackCtx.setType();
-        pl_pas_assParser.FileTypeContext fileCtx = unpackCtx.fileType();
+        ArrayTypeContext arrCtx = unpackCtx.arrayType();
+        SetTypeContext setCtx = unpackCtx.setType();
+        FileTypeContext fileCtx = unpackCtx.fileType();
 
         String elementTypeName = null;
         Token idTok = null;
         if (arrCtx != null) {
-            pl_pas_assParser.ComponentTypeContext compType = arrCtx.componentType();
-            pl_pas_assParser.Type_Context typeCtx = compType.type_();
+            ComponentTypeContext compType = arrCtx.componentType();
+            Type_Context typeCtx = compType.type_();
 
             if (typeCtx != null) {
 
-                pl_pas_assParser.PointerTypeContext pointerCtx =
+                PointerTypeContext pointerCtx =
                         typeCtx.pointerType();
-                pl_pas_assParser.StructuredTypeContext structCtx =
+                StructuredTypeContext structCtx =
                         typeCtx.structuredType();
-                pl_pas_assParser.SimpleTypeContext simpleTCtx = typeCtx.simpleType();
+                SimpleTypeContext simpleTCtx = typeCtx.simpleType();
                 if (simpleTCtx != null) {
-                    pl_pas_assParser.TypeIdentifierContext typeIdContext =
+                    TypeIdentifierContext typeIdContext =
                             simpleTCtx.typeIdentifier();
                     if (typeIdContext != null) {
-                        pl_pas_assParser.IdentifierContext idContext =
+                        IdentifierContext idContext =
                                 typeIdContext.identifier();
                         if (idContext != null) {
                             Token typeIdentifierTok =
@@ -294,15 +394,15 @@ public class ExpressionsToObjects {
 
                 }
             }
-            pl_pas_assParser.TypeListContext typeList = arrCtx.typeList();
+            TypeListContext typeList = arrCtx.typeList();
             ValTypeResult result = null;
             typeCtx = compType.type_();
 
             if (typeList != null) {
-                List<pl_pas_assParser.IndexTypeContext> idxTypeList = typeList.indexType();
-                for (pl_pas_assParser.IndexTypeContext indexType : idxTypeList) {
-                    pl_pas_assParser.SimpleTypeContext simpleType = indexType.simpleType();
-                    pl_pas_assParser.IdentifierContext idContext = simpleType.typeIdentifier().identifier();
+                List<IndexTypeContext> idxTypeList = typeList.indexType();
+                for (IndexTypeContext indexType : idxTypeList) {
+                    SimpleTypeContext simpleType = indexType.simpleType();
+                    IdentifierContext idContext = simpleType.typeIdentifier().identifier();
                     idTok = idContext.IDENT().getSymbol();
                     if (simpleType != null) {
                         result = handleSimpleType(simpleType, typeName);
@@ -310,17 +410,17 @@ public class ExpressionsToObjects {
                 }
             }
 
-            pl_pas_assParser.TypeListContext typeListCtx = arrCtx.typeList();
+            TypeListContext typeListCtx = arrCtx.typeList();
             List<Token> idTokenList = new ArrayList<>();
             if (typeListCtx != null) {
-                List<pl_pas_assParser.IndexTypeContext> idxTypeList = typeListCtx.indexType();
-                for (pl_pas_assParser.IndexTypeContext indexType : idxTypeList) {
-                    pl_pas_assParser.SimpleTypeContext simpleType = indexType.simpleType();
+                List<IndexTypeContext> idxTypeList = typeListCtx.indexType();
+                for (IndexTypeContext indexType : idxTypeList) {
+                    SimpleTypeContext simpleType = indexType.simpleType();
                     if (simpleType != null) {
-                        pl_pas_assParser.TypeIdentifierContext typeIdContext =
+                        TypeIdentifierContext typeIdContext =
                                 simpleType.typeIdentifier();
                         if (typeIdContext != null) {
-                            pl_pas_assParser.IdentifierContext idCtx = typeIdContext.identifier();
+                            IdentifierContext idCtx = typeIdContext.identifier();
                             if (idCtx != null) {
                                 idTok = idCtx.IDENT().getSymbol();
                                 idTokenList.add(idTok);
@@ -342,12 +442,12 @@ public class ExpressionsToObjects {
         }
     }
 
-    public static void recurExpression(List<pl_pas_assParser.ExpressionContext> exprList,
-                                       List<pl_pas_assParser.SimpleExpressionContext> simpleList) {
-        for (pl_pas_assParser.ExpressionContext expressionCtx : exprList) {
-            List<pl_pas_assParser.ExpressionContext> thisExpressions = expressionCtx.expression();
+    public static void recurExpression(List<ExpressionContext> exprList,
+                                       List<SimpleExpressionContext> simpleList) {
+        for (ExpressionContext expressionCtx : exprList) {
+            List<ExpressionContext> thisExpressions = expressionCtx.expression();
             if (thisExpressions != null) {
-                for (pl_pas_assParser.ExpressionContext expr : thisExpressions) {
+                for (ExpressionContext expr : thisExpressions) {
                     System.err.println("expr: " + expr.toString());
                 }
                 recurExpression(thisExpressions, simpleList);
@@ -355,7 +455,7 @@ public class ExpressionsToObjects {
         }
     }
 
-    public static void workOnVarContext(pl_pas_assParser.VariableContext ctx) {
+    public static void workOnVarContext(VariableContext ctx) {
         List<TerminalNode> lambda = ctx.LAMBDA();
         TerminalNode atNode = ctx.AT();
         List<TerminalNode> comma = ctx.COMMA();
@@ -412,14 +512,14 @@ public class ExpressionsToObjects {
         }
     }
 
-    public static void traceSectionCtx(pl_pas_assParser.FormalParameterSectionContext sectionCtx) {
+    public static void traceSectionCtx(FormalParameterSectionContext sectionCtx) {
         for (Integer count = 0; count < sectionCtx.getChildCount(); count++) {
             ParseTree childObj = sectionCtx.getChild(count);
-            if (childObj instanceof pl_pas_assParser.ParameterGroupContext) {
-                pl_pas_assParser.ParameterGroupContext parmGroupCtx = (pl_pas_assParser.ParameterGroupContext) childObj;
-                pl_pas_assParser.TypeIdentifierContext typeCtx = parmGroupCtx.typeIdentifier();
-                pl_pas_assParser.IdentifierListContext idList = parmGroupCtx.identifierList();
-                pl_pas_assParser.IdentifierContext typeIdCtx = typeCtx.identifier();
+            if (childObj instanceof ParameterGroupContext) {
+                ParameterGroupContext parmGroupCtx = (ParameterGroupContext) childObj;
+                TypeIdentifierContext typeCtx = parmGroupCtx.typeIdentifier();
+                IdentifierListContext idList = parmGroupCtx.identifierList();
+                IdentifierContext typeIdCtx = typeCtx.identifier();
                 if (typeCtx != null) {
                     TerminalNode theType = null;
                     if (typeCtx.BOOLEAN() != null) {
@@ -448,7 +548,7 @@ public class ExpressionsToObjects {
 
                 }
 
-                for (pl_pas_assParser.IdentifierContext idCtx : idList.identifier()) {
+                for (IdentifierContext idCtx : idList.identifier()) {
                     Integer idType = idCtx.IDENT().getSymbol().getType();
                     String idText = idCtx.IDENT().getSymbol().getText();
                     Integer lineNo = idCtx.IDENT().getSymbol().getLine();

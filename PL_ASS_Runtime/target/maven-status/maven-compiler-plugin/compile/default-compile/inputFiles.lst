@@ -1,0 +1,15 @@
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/calculationandtypes/StackMachine.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/LambdaFun.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/ILambdaFun.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/ThreadingFeature.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/calculationandtypes/RuntimeExpression.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/calculationandtypes/StackToken.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/HeapStorage.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/FunCallStack.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/test/hgp/ang/runtime/calculationandtypes/NumericLogicTest.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/Fun.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/RibCageEnv.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/CommandLine.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/FlowControl.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/calculationandtypes/NumericLogic.java
+/Users/hglabplh/IdeaProjects/H.G.P.PL1-Pascal-Ass-Lang/PL_ASS_Runtime/src/main/java/hgp/lang/runtime/SymbolsTable.java

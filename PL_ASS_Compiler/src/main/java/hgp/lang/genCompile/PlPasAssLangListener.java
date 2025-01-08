@@ -479,8 +479,8 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                 List<FormalParameterSectionContext> parmSection =
                         parmList.formalParameterSection();
                 if (parmSection != null) {
-                    for (FormalParameterSectionContext parmSectionCtx: parmSection) {
-                        TerminalNode procedureInnerNode =  parmSectionCtx.PROCEDURE();
+                    for (FormalParameterSectionContext parmSectionCtx : parmSection) {
+                        TerminalNode procedureInnerNode = parmSectionCtx.PROCEDURE();
                         TerminalNode varNode = parmSectionCtx.VAR();
                         ParameterGroupContext parmGroupCtx =
                                 parmSectionCtx.parameterGroup();
@@ -488,7 +488,7 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
                             IdentifierListContext idListCtx = parmGroupCtx.identifierList();
                             if (idListCtx != null) {
                                 List<IdentifierContext> idCtxCollection = idListCtx.identifier();
-                                for (IdentifierContext idCtx: idCtxCollection) {
+                                for (IdentifierContext idCtx : idCtxCollection) {
                                     TerminalNode idNode = idCtx.IDENT();
                                     Token idTok = idNode.getSymbol();
 
@@ -927,50 +927,50 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
     @Override
     public void enterProcedureDeclaration(pl_pas_assParser.ProcedureDeclarationContext ctx) {
         System.out.println("enterProcedureDeclaration");
-            TerminalNode procedureNode = ctx.PROCEDURE();
-            if (procedureNode != null) {
-                System.out.println(procedureNode.getSymbol().getType() + " :: " +
-                        procedureNode.getSymbol().getText());
-                if (ctx.identifier() != null) {
-                    System.out.println(ctx.identifier().IDENT().getSymbol().getText());
-                }
+        TerminalNode procedureNode = ctx.PROCEDURE();
+        if (procedureNode != null) {
+            System.out.println(procedureNode.getSymbol().getType() + " :: " +
+                    procedureNode.getSymbol().getText());
+            if (ctx.identifier() != null) {
+                System.out.println(ctx.identifier().IDENT().getSymbol().getText());
+            }
 
-                FormalParameterListContext parmList = ctx.formalParameterList();
-                if (parmList != null) {
-                    List<FormalParameterSectionContext> parmSection =
-                            parmList.formalParameterSection();
-                    if (parmSection != null) {
-                        for (FormalParameterSectionContext parmSectionCtx: parmSection) {
-                            TerminalNode procedureInnerNode =  parmSectionCtx.PROCEDURE();
-                            TerminalNode varNode = parmSectionCtx.VAR();
-                            ParameterGroupContext parmGroupCtx =
-                                    parmSectionCtx.parameterGroup();
-                            if (parmGroupCtx != null) {
-                                IdentifierListContext idListCtx = parmGroupCtx.identifierList();
-                                if (idListCtx != null) {
-                                    List<IdentifierContext> idCtxCollection = idListCtx.identifier();
-                                    for (IdentifierContext idCtx: idCtxCollection) {
-                                        TerminalNode idNode = idCtx.IDENT();
-                                        Token idTok = idNode.getSymbol();
+            FormalParameterListContext parmList = ctx.formalParameterList();
+            if (parmList != null) {
+                List<FormalParameterSectionContext> parmSection =
+                        parmList.formalParameterSection();
+                if (parmSection != null) {
+                    for (FormalParameterSectionContext parmSectionCtx : parmSection) {
+                        TerminalNode procedureInnerNode = parmSectionCtx.PROCEDURE();
+                        TerminalNode varNode = parmSectionCtx.VAR();
+                        ParameterGroupContext parmGroupCtx =
+                                parmSectionCtx.parameterGroup();
+                        if (parmGroupCtx != null) {
+                            IdentifierListContext idListCtx = parmGroupCtx.identifierList();
+                            if (idListCtx != null) {
+                                List<IdentifierContext> idCtxCollection = idListCtx.identifier();
+                                for (IdentifierContext idCtx : idCtxCollection) {
+                                    TerminalNode idNode = idCtx.IDENT();
+                                    Token idTok = idNode.getSymbol();
 
-                                        System.out.println(idTok.getType() + " :: " +
-                                                idTok.getText());
-                                    }
+                                    System.out.println(idTok.getType() + " :: " +
+                                            idTok.getText());
                                 }
                             }
-                            if (varNode != null) {
-
-                            }
-
-                            if (procedureInnerNode != null) {
-
-                            }
+                        }
+                        if (varNode != null) {
 
                         }
-                    }
 
+                        if (procedureInnerNode != null) {
+
+                        }
+
+                    }
                 }
+
             }
+        }
     }
 
     @Override
@@ -1588,19 +1588,62 @@ public class PlPasAssLangListener extends pl_pas_assBaseListener
         ExpressionContext exprCtx = ctx.expression();
         if (exprCtx != null) {
             List<RelationaloperatorContext> relOpCtxList = exprCtx.relationaloperator();
-            if(relOpCtxList != null) {
-                for (RelationaloperatorContext relOpCtx : relOpCtxList) {
-                    relOpCtx.GE();
-                    relOpCtx.GT();
-                    relOpCtx.IN();
-                    relOpCtx.EQUAL();
-                    relOpCtx.LE();
-                    relOpCtx.LT();
-                    relOpCtx.NOT_EQUAL();
+            ExpressionsToObjects.handleRelationaloperatorContextNodes(relOpCtxList);
+            List<SimpleExpressionContext> simpleExpr = exprCtx.simpleExpression();
+            /* there is more  */
+
+        }
+        StatementContext stmtCtx = ctx.statement();
+        if (stmtCtx != null) {
+            LabelContext labCtx = stmtCtx.label();
+            if (labCtx != null) {
+                UnsignedIntegerContext uintCtx = labCtx.unsignedInteger();
+                if (uintCtx != null) {
+                    TerminalNode numIntNode = uintCtx.NUM_INT();
+                    if (numIntNode != null) {
+                        Token numIntTok = numIntNode.getSymbol();
+                        numIntTok.getText(); //.....
 
 
+                    }
                 }
             }
+            UnlabelledStatementContext ulabCtx = stmtCtx.unlabelledStatement();
+            if (ulabCtx != null) {
+                SimpleStatementContext simpleStmtCtx = ulabCtx.simpleStatement();
+                if (simpleStmtCtx != null) {
+                    simpleStmtCtx.procedureStatement();
+                    simpleStmtCtx.assignmentStatement();
+                    simpleStmtCtx.emptyStatement_();
+                    simpleStmtCtx.gotoStatement();
+                }
+                StructuredStatementContext structStmtCtx =
+                        ulabCtx.structuredStatement();
+                if (structStmtCtx != null) {
+                    CompoundStatementContext compStmtCtx =
+                            structStmtCtx.compoundStatement();
+                    if (compStmtCtx != null) {
+                        compStmtCtx.statements(); // recur
+                        compStmtCtx.END();
+                        compStmtCtx.BEGIN();
+                    }
+                    ConditionalStatementContext condStmtCtx = structStmtCtx.conditionalStatement();
+                    if (condStmtCtx != null) {
+                        condStmtCtx.ifStatement();
+                        condStmtCtx.caseStatement();
+                    }
+                    RepetetiveStatementContext repetitiveStmtCtx =
+                            structStmtCtx.repetetiveStatement();
+                    if (repetitiveStmtCtx != null) {
+                        repetitiveStmtCtx.whileStatement();
+                        repetitiveStmtCtx.forStatement();
+                        repetitiveStmtCtx.repeatStatement();
+                    }
+                }
+
+            }
+
+
         }
 
     }
